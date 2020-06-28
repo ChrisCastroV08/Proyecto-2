@@ -85,3 +85,101 @@ class WaterRook(Rooks):
 	self.precio=150
 	self.ataque=8
 	self.resistencia=16
+	
+""""""""""""""""""""""""""""""""
+
+from tkinter import *
+import winsound
+
+
+master = Tk()
+master.title("Proyecto 2")
+master.geometry("800x600")
+master.configure(bg="black")
+master.resizable(False, False)  
+
+
+
+def ventana():
+
+    master.geometry("650x900")
+    master.configure(bg="white")
+    w = Canvas(master, width=500, height=900, bg="blue")
+    w.place(x=0,y=0)
+    line1 = w.create_rectangle(0,100,900,100,fill="black")
+    line2 = w.create_rectangle(0,200,900,200,fill="black")
+    line3 = w.create_rectangle(0,300,900,300,fill="black")
+    line4 = w.create_rectangle(0,400,900,400,fill="black")
+    line5 = w.create_rectangle(0,500,900,500,fill="black")
+    line6 = w.create_rectangle(0,600,900,600,fill="black")
+    line7 = w.create_rectangle(0,700,900,700,fill="black")
+    line8 = w.create_rectangle(0,800,900,800,fill="black")
+    lineA = w.create_rectangle(100,0,100,900,fill="black")
+    lineB = w.create_rectangle(200,0,200,900,fill="black")
+    lineC = w.create_rectangle(300,0,300,900,fill="black")
+    lineD = w.create_rectangle(400,0,400,900,fill="black")
+    lineD = w.create_rectangle(500,0,500,900,fill="black")
+
+
+def Help():
+    def Back():
+        bot.place(x=338,y=200)
+        bot2.place(x=345,y=300)
+        bot3.place_forget()
+        label.place_forget()
+        label2.place_forget()
+    bot.place_forget()
+    bot2.place_forget()
+    label.place(x=240,y=0)
+    label2.place(x=10,y=300)
+    bot3 = Button(master, text="Back to\nmenu",font=("Gill Sans Ultra Bold",12,"bold"),
+                  justify=CENTER, command=Back)
+    bot3.place(x=700,y=540)
+    
+bot = Button(master, text="Login",fg="blue"
+             ,bg="lightgrey",font=("Gill Sans Ultra Bold",20,"bold"),justify=CENTER, command=ventana)
+bot.place(x=338,y=200)
+bot2 = Button(master, text="Help",fg="blue"
+             ,bg="lightgrey",font=("Gill Sans Ultra Bold",20,"bold"),justify=CENTER, command=Help)
+bot2.place(x=345,y=300)
+label = Label(text="How to play",font=("Forte",45,"bold"),bg="black",fg="green")
+label2 = Label(text="""El juego comenzara en el momento en el que se oprima el botón de login, en
+este momento los "Avatars" empezaran a salir de la parte inferior de la
+pantalla, cada "Avatar" posee poderes y todos los "Avatars" dejan un total
+de alrededor de 75 monedas para que el jugador pueda usar para seguir
+jugando, el objetivo principal del juego es no dejar que estos "Avatars"
+lleguen a la parte superior de la pantalla, para eso el jugador tiene a la
+dispocisión los "Rooks", los "Rooks" son personajes que el jugador puede
+colocar en cada casilla a cambio de dinero, cada "Rook" cuesta diferente,
+debido a que poseen poderes diferentes. Por último el dinero se estara
+generando periódicamente en valores de 25,50,100. Suerte :)"""
+,font=("Gill Sans Ultra Bold",12))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+master.mainloop()
