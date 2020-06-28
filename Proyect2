@@ -153,7 +153,7 @@ dispocisión los "Rooks", los "Rooks" son personajes que el jugador puede
 colocar en cada casilla a cambio de dinero, cada "Rook" cuesta diferente,
 debido a que poseen poderes diferentes. Por último el dinero se estara
 generando periódicamente en valores de 25,50,100. Suerte :)"""
-,font=("Gill Sans Ultra Bold",12))
+,font=("Gill Sans Ultra Bold",14))
 
 
 
