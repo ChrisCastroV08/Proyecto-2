@@ -1,95 +1,87 @@
+
 from tkinter import *
+from random import randint
+import winsound
+import time
 
 #=========================== Definición de clases ===============================
-
-#================================== Avatars =====================================
 class Avatars():
- 	
- 	def __init__(self, arg):
- 		super(Avatars, self).__init__()
- 
-		self.__velocidad = 5
-		self.__monedasObtenidas = 75
-		self.__ataque
-		self.__tiempoEspera
-		self.resistencia
-		self.posy=1000
+	def __init__(self, ataque, resistencia, tiempoEspera, tiempoAtaque):
+		self.ataque = ataque
+		self.resistencia = resistencia
+		self.tiempoEspera = tiempoEspera
+		self.tiempoAtaque= tiempoAtaque
+
+		self.posy=900
+		self.velocidad=5
+		self.monedasObtenidas = 75
 
 	def avanzar(self):
-		while True:
-			posy-=self.velocidad
+		n=self.posy-100
 
-class Arquero (Avatars):
-	self.ataque=2
-	self.resistencia=5
-	self.tiempoEspera=12
-	self.tiempoAtaque=10
+		while (self.posy>=self.posy-100*n) and self.posy>-100:
+			self.posy-=self.velocidad
+			time.sleep(0.2)
+
+			if self.posy<n:
+				time.sleep(self.tiempoEspera-0.2)
+				n-=100
+
+			print("La posicion del avatar es {}".format(self.posy))
+
+class Arquero(Avatars):
+	def __init__(self):
+		Avatars.__init__(self, 2,5,12,10)
 
 class Escudero(Avatars):
-	self.ataque=3
-	self.resistencia=10
-	self.tiempoEspera=10
-	self.tiempoAtaque=10
+	def __init__(self):
+		Avatars.__init__(self, 3,10,10,15)
 
-	def activarEscudo(self): #Protege también a los avatar que se encuentren detrás de él
+	def activarEscudo(self): #Se protege del ataque de los rooks
 		pass
 
-class Lenador(Avatars):
-	self.ataque=9
-	self.resistencia=20 
-	self.tiempoEspera=13
-	self.tiempoAtaque=5
+class Lenador(Avatars): #Leñador
+	def __init__(self):
+		Avatars.__init__(self, 9,20,13,5)
 
 	def atacar(self): #Solo a la casilla que tenga al frente
 		pass
 
 class Canibal(Avatars):
-	self.ataque=12
-	self.resistencia=25
-	self.tiempoEspera=14
-	self.tiempoAtaque=3
+	def __init__(self):
+		Avatars.__init__(self, 12,25,14,3)
 
 
-#================================== Rooks =====================================
+#=============================== Rooks ======================================
 
 class Rooks():
+	def __init__(self, precio, potenciaAtaque, resistencia):
+		self.precio = precio
+		self.resistencia = resistencia
+		self.potenciaAtaque = potenciaAtaque
 
-	def __init__(self, arg):
- 		super(Rooks, self).__init__()
-
-		self.precio
-		self.ataque
-		self.resistencia
-		self.frecuenciaAtaque
-		self.potenciaAtaque
+		self.frecuenciaAtaque = 10
 
 	def eliminar(self):
 		pass
 
 class SandRook(Rooks):
-	self.precio=50
-	self.ataque=2
-	self.resistencia=1
-		
-class RockRook(Rooks):
-	self.precio=100
-	self.ataque=14
-	self.resistencia=14
-		
-class FireRook(Rooks):
-	self.precio=150
-	self.ataque=8
-	self.resistencia=16
-	
-class WaterRook(Rooks):
-	self.precio=150
-	self.ataque=8
-	self.resistencia=16
-	
-""""""""""""""""""""""""""""""""
+	def __init__(self):
+		Rooks.__init__(self, 50, 2, 12)
 
-from tkinter import *
-import winsound
+class RockRook(Rooks):
+	def __init__(self):
+		Rooks.__init__(self, 100, 4, 14)
+
+class FireRook(Rooks):
+	def __init__(self):
+		Rooks.__init__(self, 150, 8, 16)
+
+class WaterRook(Rooks):
+	def __init__(self):
+		Rooks.__init__(self, 150, 8, 16)
+	
+=============================== Definición de la ventana ================================== 
 
 
 master = Tk()
@@ -120,7 +112,7 @@ def ventana():
     lineD = w.create_rectangle(400,0,400,900,fill="black")
     lineD = w.create_rectangle(500,0,500,900,fill="black")
 
-
+============================== Definición de botones =================================================
 def Help():
     def Back():
         bot.place(x=338,y=200)
