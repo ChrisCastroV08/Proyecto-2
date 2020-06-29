@@ -1,20 +1,25 @@
-
+#==================================Imports=======================================
 from tkinter import *
 from random import randint
 import winsound
 import time
 
+#============================= Variables globales ===============================
+posiciones=[[0,100,200,300,400,500],[0,100,200,300,400,500,600,700,800,900,100]] #La primera sublista son las posiciones en X, la segunda en Y
+
 #=========================== Definición de clases ===============================
 class Avatars():
+	global archerImg
+
 	def __init__(self, ataque, resistencia, tiempoEspera, tiempoAtaque):
 		self.ataque = ataque
 		self.resistencia = resistencia
 		self.tiempoEspera = tiempoEspera
-		self.tiempoAtaque= tiempoAtaque
+		self.tiempoAtaque = tiempoAtaque
 
 		self.posy=900
 		self.velocidad=5
-		self.monedasObtenidas = 75
+		self.monedasObtenidas=75
 
 	def avanzar(self):
 		n=self.posy-100
@@ -27,7 +32,7 @@ class Avatars():
 				time.sleep(self.tiempoEspera-0.2)
 				n-=100
 
-			print("La posicion del avatar es {}".format(self.posy))
+			#print("La posicion del avatar es {}".format(self.posy))
 
 class Arquero(Avatars):
 	def __init__(self):
@@ -62,6 +67,9 @@ class Rooks():
 
 		self.frecuenciaAtaque = 10
 
+	def agregar(self):
+		pass
+
 	def eliminar(self):
 		pass
 
@@ -80,8 +88,13 @@ class FireRook(Rooks):
 class WaterRook(Rooks):
 	def __init__(self):
 		Rooks.__init__(self, 150, 8, 16)
-	
-=============================== Definición de la ventana ================================== 
+
+#====================================== Funciones ==========================================
+
+
+
+
+#=============================== Definición de la ventana ================================== 
 
 
 master = Tk()
@@ -98,21 +111,14 @@ def ventana():
     master.configure(bg="white")
     w = Canvas(master, width=500, height=900, bg="blue")
     w.place(x=0,y=0)
-    line1 = w.create_rectangle(0,100,900,100,fill="black")
-    line2 = w.create_rectangle(0,200,900,200,fill="black")
-    line3 = w.create_rectangle(0,300,900,300,fill="black")
-    line4 = w.create_rectangle(0,400,900,400,fill="black")
-    line5 = w.create_rectangle(0,500,900,500,fill="black")
-    line6 = w.create_rectangle(0,600,900,600,fill="black")
-    line7 = w.create_rectangle(0,700,900,700,fill="black")
-    line8 = w.create_rectangle(0,800,900,800,fill="black")
-    lineA = w.create_rectangle(100,0,100,900,fill="black")
-    lineB = w.create_rectangle(200,0,200,900,fill="black")
-    lineC = w.create_rectangle(300,0,300,900,fill="black")
-    lineD = w.create_rectangle(400,0,400,900,fill="black")
-    lineD = w.create_rectangle(500,0,500,900,fill="black")
 
-============================== Definición de botones =================================================
+    for i in range(6):
+    	lineX = w.create_rectangle(i*100,0,i*100,900,fill="black")
+
+    for j in range(10):
+    	lineY = w.create_rectangle(0,j*100,900,j*100,fill="black")
+    
+#============================== Definición de botones =================================================
 def Help():
     def Back():
         bot.place(x=338,y=200)
@@ -120,20 +126,19 @@ def Help():
         bot3.place_forget()
         label.place_forget()
         label2.place_forget()
+
     bot.place_forget()
     bot2.place_forget()
     label.place(x=240,y=0)
     label2.place(x=10,y=300)
-    bot3 = Button(master, text="Back to\nmenu",font=("Gill Sans Ultra Bold",12,"bold"),
-                  justify=CENTER, command=Back)
+    bot3 = Button(master, text="Back to\nmenu",font=("Gill Sans Ultra Bold",12,"bold"),justify=CENTER, command=Back)
     bot3.place(x=700,y=540)
     
-bot = Button(master, text="Login",fg="blue"
-             ,bg="lightgrey",font=("Gill Sans Ultra Bold",20,"bold"),justify=CENTER, command=ventana)
+bot = Button(master, text="Login",fg="blue",bg="lightgrey",font=("Gill Sans Ultra Bold",20,"bold"),justify=CENTER, command=ventana)
 bot.place(x=338,y=200)
-bot2 = Button(master, text="Help",fg="blue"
-             ,bg="lightgrey",font=("Gill Sans Ultra Bold",20,"bold"),justify=CENTER, command=Help)
+bot2 = Button(master, text="Help",fg="blue",bg="lightgrey",font=("Gill Sans Ultra Bold",20,"bold"),justify=CENTER, command=Help)
 bot2.place(x=345,y=300)
+
 label = Label(text="How to play",font=("Forte",45,"bold"),bg="black",fg="green")
 label2 = Label(text="""El juego comenzara en el momento en el que se oprima el botón de login, en
 este momento los "Avatars" empezaran a salir de la parte inferior de la
@@ -144,8 +149,7 @@ lleguen a la parte superior de la pantalla, para eso el jugador tiene a la
 dispocisión los "Rooks", los "Rooks" son personajes que el jugador puede
 colocar en cada casilla a cambio de dinero, cada "Rook" cuesta diferente,
 debido a que poseen poderes diferentes. Por último el dinero se estara
-generando periódicamente en valores de 25,50,100. Suerte :)"""
-,font=("Gill Sans Ultra Bold",14))
+generando periódicamente en valores de 25,50,100. Suerte :)""",font=("Gill Sans Ultra Bold",14))
 
 
 
