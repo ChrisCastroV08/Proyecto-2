@@ -121,25 +121,147 @@ def ventana():
 #============================== Definición de botones =================================================
 def Help():
     def Back():
-        bot.place(x=338,y=200)
-        bot2.place(x=345,y=300)
-        bot3.place_forget()
+        bot.place(x=338, y=200)
+        bot2.place(x=345, y=300)
+        bot5.place(x=320, y=400)
+        bot4.place(x=320, y=500)
+        exit1.place_forget()
         label.place_forget()
         label2.place_forget()
 
     bot.place_forget()
     bot2.place_forget()
-    label.place(x=240,y=0)
-    label2.place(x=10,y=300)
-    bot3 = Button(master, text="Back to\nmenu",font=("Gill Sans Ultra Bold",12,"bold"),justify=CENTER, command=Back)
-    bot3.place(x=700,y=540)
-    
-bot = Button(master, text="Login",fg="blue",bg="lightgrey",font=("Gill Sans Ultra Bold",20,"bold"),justify=CENTER, command=ventana)
-bot.place(x=338,y=200)
-bot2 = Button(master, text="Help",fg="blue",bg="lightgrey",font=("Gill Sans Ultra Bold",20,"bold"),justify=CENTER, command=Help)
-bot2.place(x=345,y=300)
+    bot4.place_forget()
+    label.place(x=240, y=0)
+    label2.place(x=10, y=300)
+    exit1 = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 12, "bold")
+                  ,justify=CENTER, command=Back)
+    exit1.place(x=700, y=540)
 
-label = Label(text="How to play",font=("Forte",45,"bold"),bg="black",fg="green")
+def Credits():
+    def Back():
+        bot.place(x=338, y=200)
+        bot2.place(x=345, y=300)
+        bot5.place(x=320, y=400)
+        bot4.place(x=320, y=500)
+        exit2.place_forget()
+        label3.place_forget()
+        label4.place_forget()
+    bot.place_forget()
+    bot2.place_forget()
+    bot4.place_forget()
+    bot5.place_forget()
+    label3.place(x=300, y=0)
+    label4.place(x=200, y=100)
+    exit2 = Button(master, text="Back to\nmenu",fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 12, "bold"),
+                  justify=CENTER, command=Back)
+    exit2.place(x=700, y=540)
+
+def Highscores():
+    def Back():
+        pos1.place_forget()
+        pos2.place_forget()
+        pos3.place_forget()
+        pos4.place_forget()
+        pos5.place_forget()
+        pos6.place_forget()
+        pos7.place_forget()
+        exit3.place_forget()
+        bot.place(x=338, y=200)
+        bot2.place(x=345, y=300)
+        bot5.place(x=320, y=400)
+        bot4.place(x=320, y=500)
+    bot.place_forget()
+    bot2.place_forget()
+    bot4.place_forget()
+    bot5.place_forget()
+    list_scores = ReadFile()
+    exit3 = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 12, "bold"),
+                  justify=CENTER, command=Back)
+    exit3.place(x=700, y=540)
+
+    pos1 = Message(
+        text="1. " + list_scores[0].split(",")[0] + ", " + list_scores[0].split(",")[1] + " points " + "Level: " +
+             list_scores[0].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
+        width=1000)
+    pos1.place(x=5, y=200)  # Score #1
+
+    pos2 = Message(
+        text="2. " + list_scores[1].split(",")[0] + ", " + list_scores[1].split(",")[1] + " points " + "Level: " +
+             list_scores[1].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
+        width=1000)
+    pos2.place(x=5, y=250)  # Score #2
+
+    pos3 = Message(
+        text="3. " + list_scores[2].split(",")[0] + ", " + list_scores[2].split(",")[1] + " points " + "Level: " +
+             list_scores[2].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
+        width=1000)
+    pos3.place(x=5, y=300)  # Score #3
+
+    pos4 = Message(
+        text="4. " + list_scores[3].split(",")[0] + ", " + list_scores[3].split(",")[1] + " points " + "Level: " +
+             list_scores[3].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
+        width=1000)
+    pos4.place(x=5, y=350)  # Score #4
+
+    pos5 = Message(
+        text="5. " + list_scores[4].split(",")[0] + ", " + list_scores[4].split(",")[1] + " points " + "Level: " +
+             list_scores[4].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
+        width=1000)
+    pos5.place(x=5, y=400)  # Score #5
+
+    pos6 = Message(
+        text="6. " + list_scores[5].split(",")[0] + ", " + list_scores[5].split(",")[1] + " points " + "Level: " +
+             list_scores[5].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
+        width=1000)
+    pos6.place(x=5, y=450)  # Score #6
+
+    pos7 = Message(
+        text="7. " + list_scores[6].split(",")[0] + ", " + list_scores[6].split(",")[1] + " points " + "Level: " +
+             list_scores[6].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
+        width=1000)
+    pos7.place(x=5, y=500)  # Score #7
+
+
+
+def ReadFile():
+    path="Scores.txt"
+    archive= open(path)
+    content=archive.readlines()
+    archive.close()
+    return content
+
+
+
+
+bot = Button(master, text="Login", fg="blue"
+             , bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=ventana)
+bot.place(x=338, y=200)
+bot2 = Button(master, text="Help", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Help)
+bot2.place(x=345, y=300)
+bot4 = Button(master, text="Credits", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Credits)
+bot4.place(x=320, y=500)
+bot5 = Button(master, text="Highscores", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Highscores)
+bot5.place(x=320, y=400)
+label = Label(text="How to play", font=("Forte", 45, "bold"), bg="black", fg="green")
+label3 = Label(text="Credits", font=("Forte", 45, "bold"),bg="black", fg="green")
+label4 = Label(text="""Costa Rica
+
+Instituto Tecnológico de Costa Rica
+
+Ingeniería en Computadores 
+
+Taller de Programación Grupo 03
+
+Prof. Leonardo Araya
+
+Versión alpha alv
+
+Christopher Jesus Castro
+Alí José Daniels
+Joel Andony Gómez
+
+2020""", font=("Forte", 18, "bold"))
 label2 = Label(text="""El juego comenzara en el momento en el que se oprima el botón de login, en
 este momento los "Avatars" empezaran a salir de la parte inferior de la
 pantalla, cada "Avatar" posee poderes y todos los "Avatars" dejan un total
@@ -149,33 +271,6 @@ lleguen a la parte superior de la pantalla, para eso el jugador tiene a la
 dispocisión los "Rooks", los "Rooks" son personajes que el jugador puede
 colocar en cada casilla a cambio de dinero, cada "Rook" cuesta diferente,
 debido a que poseen poderes diferentes. Por último el dinero se estara
-generando periódicamente en valores de 25,50,100. Suerte :)""",font=("Gill Sans Ultra Bold",14))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+generando periódicamente en valores de 25,50,100. Suerte :)""", font=("Gill Sans Ultra Bold", 12))
 
 master.mainloop()
