@@ -5,17 +5,19 @@ import winsound
 import time
 #import pygame
 import os
+import threading
+from threading import Thread
 
 #============================= Variables globales ===============================
-posiciones=[[0,100,200,300,400],[0,100,200,300,400,500,600,700,800,900,100]] #La primera sublista son las posiciones en X, la segunda en Y
-
+posiciones=[[0,100,200,300,400],[0,100,200,300,400,500,600,700,800,900,1000]] #La primera sublista son las posiciones en X, la segunda en Y
 monedas=150
-
 enemigos=[]
+torres=[]
 
-aparece_avatar=False
+
 #=========================== Definición de clases ===============================
-class Avatars():
+
+class Avatars(): #Esta clase es la base para crar a los avatar
 	pass
 	global posiciones
 	global archerImg
@@ -29,7 +31,8 @@ class Avatars():
 		self.posx = posiciones[0][random.randint(0,4)]
 		self.sprite=LoadImage(sprite)
 
-		self.posy=300
+		self.enPantalla = False
+		self.posy=600
 		self.velocidad=5
 		self.monedasObtenidas=75
 
@@ -38,7 +41,7 @@ class Avatars():
 
 		while (self.posy>=self.posy-100*n) and self.posy>-100:
 			self.posy-=self.velocidad
-			w.move(self.sprite,self.posx,self.posy)
+			self.sprite.place(x=self.posx, y=self.posy)
 
 			time.sleep(0.2)
 
@@ -46,39 +49,19 @@ class Avatars():
 				time.sleep(self.tiempoEspera-0.2)
 				n-=100
 
-			print("La posicion del avatar es {} y en x {}".format(self.posy, self.posx))
+			#print("La posicion del avatar es {} y en x {}".format(self.posy, self.posx))
 
-class Arquero(Avatars):
-	def __init__(self):
-		Avatars.__init__(self, 2,5,12,10,"arquero.png")
-		
-
-class Escudero(Avatars):
-	def __init__(self):
-		Avatars.__init__(self, 3,10,10,15)
-
-	def activarEscudo(self): #Se protege del ataque de los rooks
-		pass
-
-class Lenador(Avatars): #Leñador
-	def __init__(self):
-		Avatars.__init__(self, 9,20,13,5)
-
-	def atacar(self): #Solo a la casilla que tenga al frente
-		pass
-
-class Canibal(Avatars):
-	def __init__(self):
-		Avatars.__init__(self, 12,25,14,3)
 
 #=============================== Rooks ======================================
 
-class Rooks():
-	def __init__(self, precio, potenciaAtaque, resistencia):
+class Rooks():	#Esta clase es la base para crear los rooks
+	def __init__(self, precio, potenciaAtaque,resistencia,generarRook,sprite):
 		self.precio = precio
 		self.resistencia = resistencia
 		self.potenciaAtaque = potenciaAtaque
+		self.generarRook = generarRook 
 
+		self.sprite = LoadImage(sprite)
 		self.frecuenciaAtaque = 10
 
 	def agregar(self):
@@ -87,46 +70,86 @@ class Rooks():
 	def eliminar(self):
 		pass
 
-class SandRook(Rooks):
-	def __init__(self):
-		Rooks.__init__(self, 50, 2, 12)
 
-class RockRook(Rooks):
-	def __init__(self):
-		Rooks.__init__(self, 100, 4, 14)
-
-class FireRook(Rooks):
-	def __init__(self):
-		Rooks.__init__(self, 150, 8, 16)
-
-class WaterRook(Rooks):
-	def __init__(self):
-		Rooks.__init__(self, 150, 8, 16)
 
 #====================================== Funciones ==========================================
 
-def crear_avatars():
+def crear_avatars(cantidad_enemigos, n):	#Crea el avatar especificado
 	global enemigos
+	#n=random.randint(1,4)
 
-	for i in range(21):
-		n=random.randint(1,4)
-		if n==1:
-			avatar_creado = Arquero()
-		if n==2:
-			avatar_creado = Escudero()
-		if n==3:
-			avatar_creado = Lenador()
-		if n==4:
-			avatar_creado = Canibal()
+	#for i in range(20):
+	if n==1:
+		avatar_creado = Avatars(2, 5,12,10,"arquero.png")
+	if n==2:
+		avatar_creado = Avatars(3,10,10,15,"escudero.png")
+	if n==3:
+		avatar_creado = Avatars(9,20,13,5,"lenador.png")
+	if n==4:
+		avatar_creado = Avatars(12,25,14,3,"canibal.png")
 
-		enemigos.append(avatar_creado)
-		time.sleep(4)
+	enemigos.append(avatar_creado)
 
-def LoadImage(sprite):
+	for i in range(len(enemigos)):
+		enemigos[i].sprite.place(x=enemigos[i].posx, y=enemigos[i].posy)
+		#print(enemigos[i].ataque)
+		#time.sleep(4)
+	#hilo1()
+
+def LoadImage(sprite):	#Retorna la imagen en con el nombre especificado
 	route = os.path.join(sprite)
-	image = PhotoImage(file=route)
+	imageImg = PhotoImage(file=route)
+	image = Label(master, image=imageImg,  borderwidth=0)
+
 	return image
 
+def juego():	#Ejecuta los elementos generales del juego
+	global enemigos
+	global torres
+	juegoIniciado=True
+	#n=archer.posy-100
+
+	while juegoIniciado:
+		time.sleep(0.5)
+		"""	for i in range(len(enemigos)):
+				enemigos[i].enPantalla=True"""
+
+		crear_avatars(20,random.randint(1,4))	#Crea un avatar luego de completar una iteración
+		
+		for n in range(len(enemigos)):	#Mueve los avatar
+			time.sleep(0.01)
+			enemigos[n].posy-=enemigos[n].velocidad
+			enemigos[n].sprite.place(x=enemigos[n].posx, y=enemigos[n].posy)
+			
+
+
+
+			if enemigos[n].posy<=0:	#Termina el juego si algún avatar llega al otro lado de la pantalla
+				juegoIniciado=False
+				break
+
+
+		"""if (archer.posy>=archer.posy-100*n) and archer.posy>-100:
+				archer.posy-=archer.velocidad
+				archer.sprite.place(x=archer.posx, y=archer.posy)
+				time.sleep(0.2)
+				
+				if archer.posy<n:
+					time.sleep(archer.tiempoEspera-0.2)
+					n-=100
+				
+				if n==0:
+					break"""
+
+		"""if 
+			Rooks(50, 2, 12,False,"SandRook.png")
+			Rooks(100, 4, 14,False,"RockRook.png")
+			Rooks(150, 8, 16,False,"FireRook.png")
+			Rooks(150, 8, 16,False,"WaterRook.png")"""
+
+def hilo1():
+    t1 = Thread(target=juego, args=())
+    t1.start()
 #=============================== Definición de la ventana ================================== 
 
 
@@ -134,19 +157,17 @@ master = Tk()
 master.title("Proyecto 2")
 master.geometry("800x600")
 master.configure(bg="black")
-master.resizable(False, False)  
+master.resizable(False, False)
 
+def ventana(): #Crea la ventana en donde se va a ejecutar el juego
 
+	master.geometry("650x720")
+	master.configure(bg="white")
+	w = Canvas(master, width=500, height=900, bg="blue")
+	w.place(x=0,y=0)
 
-def ventana():
-
-    master.geometry("650x900")
-    master.configure(bg="white")
-    w = Canvas(master, width=500, height=900, bg="blue")
-    w.place(x=0,y=0)
-
-    for i in range(6):
-    	lineX = w.create_rectangle(i*100,0,i*100,900,fill="black")
+	for i in range(5):
+		lineX = w.create_rectangle(i*100,0,i*100,900,fill="black")
 
     for j in range(10):
     	lineY = w.create_rectangle(0,j*100,900,j*100,fill="black")
@@ -267,8 +288,7 @@ def ReadFile():
 
 
 
-bot = Button(master, text="Login", fg="blue"
-             , bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=ventana)
+bot = Button(master, text="Login", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=ventana)
 bot.place(x=338, y=200)
 bot2 = Button(master, text="Help", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Help)
 bot2.place(x=345, y=300)
@@ -292,7 +312,7 @@ Versión alpha alv
 
 Christopher Jesus Castro
 Alí José Daniels
-Joel Andony Gómez
+Andony Joel Gómez
 
 2020""", font=("Forte", 18, "bold"))
 label2 = Label(text="""El juego comenzara en el momento en el que se oprima el botón de login, en
