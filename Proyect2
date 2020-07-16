@@ -159,18 +159,28 @@ master.geometry("800x600")
 master.configure(bg="black")
 master.resizable(False, False)
 
-def ventana(): #Crea la ventana en donde se va a ejecutar el juego
+sys.setrecursionlimit(100000)#Increases the recursion limit
+pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("MEGALOVANIA.mp3")
+pygame.mixer.music.play(-1)#The minus 1 loops the song
 
-	master.geometry("650x720")
-	master.configure(bg="white")
-	w = Canvas(master, width=500, height=900, bg="blue")
-	w.place(x=0,y=0)
+def on_closing():
+    master.destroy()
 
-	for i in range(5):
-		lineX = w.create_rectangle(i*100,0,i*100,900,fill="black")
+def Play():
+    master.withdraw()
+    pygame.mixer.music.stop()
+    game = Toplevel()
+    game.geometry("650x900")
+    w = Canvas(game, width=500, height=900, bg="blue")
+    w.place(x=0, y=0)
+    for i in range(6):
+        lineX = w.create_rectangle(i * 100, 0, i * 100, 900, fill="black")
 
     for j in range(10):
-    	lineY = w.create_rectangle(0,j*100,900,j*100,fill="black")
+        lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
+    game.protocol("WM_DELETE_WINDOW", on_closing)
     
 #============================== Definición de botones =================================================
 def Help():
@@ -200,13 +210,13 @@ def Credits():
         bot4.place(x=320, y=500)
         exit2.place_forget()
         label3.place_forget()
-        label4.place_forget()
+        credits_label.place_forget()
     bot.place_forget()
     bot2.place_forget()
     bot4.place_forget()
     bot5.place_forget()
     label3.place(x=300, y=0)
-    label4.place(x=200, y=100)
+    credits_label.place(x=200, y=100)
     exit2 = Button(master, text="Back to\nmenu",fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 12, "bold"),
                   justify=CENTER, command=Back)
     exit2.place(x=700, y=540)
@@ -288,7 +298,8 @@ def ReadFile():
 
 
 
-bot = Button(master, text="Login", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=ventana)
+bot = Button(master, text="Login", fg="blue"
+             , bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Play)
 bot.place(x=338, y=200)
 bot2 = Button(master, text="Help", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Help)
 bot2.place(x=345, y=300)
@@ -298,7 +309,7 @@ bot5 = Button(master, text="Highscores", fg="blue", bg="lightgrey", font=("Gill 
 bot5.place(x=320, y=400)
 label = Label(text="How to play", font=("Forte", 45, "bold"), bg="black", fg="green")
 label3 = Label(text="Credits", font=("Forte", 45, "bold"),bg="black", fg="green")
-label4 = Label(text="""Costa Rica
+credits_label = Label(text="""Costa Rica
 
 Instituto Tecnológico de Costa Rica
 
@@ -312,7 +323,7 @@ Versión alpha alv
 
 Christopher Jesus Castro
 Alí José Daniels
-Andony Joel Gómez
+Joel Andony Gómez
 
 2020""", font=("Forte", 18, "bold"))
 label2 = Label(text="""El juego comenzara en el momento en el que se oprima el botón de login, en
