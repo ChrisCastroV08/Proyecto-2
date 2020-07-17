@@ -158,21 +158,115 @@ master.title("Proyecto 2")
 master.geometry("800x600")
 master.configure(bg="black")
 master.resizable(False, False)
+game = Toplevel()
+game.geometry("650x900")
+game.withdraw()
 
-sys.setrecursionlimit(100000)#Increases the recursion limit
+sys.setrecursionlimit(100000)  # Increases the recursion limit
 pygame.init()
 pygame.mixer.init()
-pygame.mixer.music.load("MEGALOVANIA.mp3")
-pygame.mixer.music.play(-1)#The minus 1 loops the song
+pygame.mixer.music.load("Menu Music.mp3")
+pygame.mixer.music.play(-1)  # The minus 1 loops the song
+
 
 def on_closing():
-    master.destroy()
+    game.withdraw()
+    master.deiconify()
+    pygame.mixer.music.load("Menu Music.mp3")
+    pygame.mixer.music.play(-1)
 
-def Play():
+
+def load_image(image_name):
+    image_path = os.path.join("Images", image_name)
+    return PhotoImage(file=image_path)
+
+
+def login():
+    def back():
+        global welcome_label
+        global NewGame_button
+        global LoadGame_button
+        global welcome_label2
+        global ChangeName_button
+        exit_button.place_forget()
+        Login_button.place(x=338, y=200)
+        Help_button.place(x=345, y=300)
+        Highscores_button.place(x=290, y=400)
+        Credits_button.place(x=320, y=500)
+        bg_label.place(x=-2, y=-2)
+        bg_label.config(image=menu_bg)
+        name_entry.place_forget()
+        login_button.place_forget()
+        welcome_label.place_forget()
+        welcome_label2.place_forget()
+        NewGame_button.place_forget()
+        LoadGame_button.place_forget()
+        ChangeName_button.place_forget()
+
+
+    def verify_name(name):
+
+        if str(name) == "":
+            messagebox.showerror("Error", "Please enter a valid nickname, your name isn't a blank space")
+        elif string_len(str(name), 0) > 9:
+            messagebox.showerror("Error", "Please enter something shorter, not more than 9 characters")
+        elif string_len(str(name), 0) < 3:
+            messagebox.showerror("Error", "Please enter something longer, not less than 3 characters")
+        else:
+            bg_label.place_forget()
+            login_button.place_forget()
+            name_entry.place_forget()
+            login_screen()
+
+    bg_label.config(image=login_bg)
+    Login_button.place_forget()
+    Help_button.place_forget()
+    Highscores_button.place_forget()
+    Credits_button.place_forget()
+    exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
+                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=back)
+    exit_button.place(x=700, y=540)
+
+    name_entry.place(x=266, y=200)
+
+    login_button = Button(master, text="Login", fg="blue", bg="lightgrey",
+                          font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=lambda: verify_name(name_entry.get()))
+    login_button.place(x=550, y=205)
+
+
+def login_screen():
+
+    global welcome_label
+    global NewGame_button
+    global LoadGame_button
+    global ChangeName_button
+    global welcome_label2
+    welcome_label = Label(text="Welcome", font=("Copperplate Gothic Bold", 48), bg="Black", fg="#6942f5")
+    welcome_label2 = Label(text=name_entry.get(), font=("Impact", 48), bg="Black", fg="white")
+    welcome_label.place(x=250, y=0)
+    welcome_label2.place(x=250, y=80)
+    NewGame_button = Button(master, text="New Game", fg="blue", bg="lightgrey",
+                            font=("Gill Sans Ultra Bold", 20), justify=CENTER)
+    NewGame_button.place(x=200, y=200)
+    LoadGame_button = Button(master, text="Load Game", fg="blue", bg="lightgrey",
+                             font=("Gill Sans Ultra Bold", 20), justify=CENTER)
+    LoadGame_button.place(x=420, y=200)
+    ChangeName_button = Button(master, text="Change Name", fg="blue", bg="lightgrey",
+                               font=("Gill Sans Ultra Bold", 20), justify=CENTER, command=login)
+    ChangeName_button.place(x=300, y=300)
+
+
+def string_len(string,result):
+    if string=="":
+        return result
+    else:
+        return string_len(string[1:],result+1)
+
+def play_game():
     master.withdraw()
-    pygame.mixer.music.stop()
-    game = Toplevel()
-    game.geometry("650x900")
+    pygame.mixer.music.load("MEGALOVANIA.mp3")
+    pygame.mixer.music.play(-1)
+    game.deiconify()
     w = Canvas(game, width=500, height=900, bg="blue")
     w.place(x=0, y=0)
     for i in range(6):
@@ -181,134 +275,117 @@ def Play():
     for j in range(10):
         lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
     game.protocol("WM_DELETE_WINDOW", on_closing)
-    
-#============================== Definición de botones =================================================
+
+
 def Help():
     def Back():
-        bot.place(x=338, y=200)
-        bot2.place(x=345, y=300)
-        bot5.place(x=320, y=400)
-        bot4.place(x=320, y=500)
-        exit1.place_forget()
-        label.place_forget()
-        label2.place_forget()
+        Login_button.place(x=338, y=200)
+        Help_button.place(x=345, y=300)
+        Highscores_button.place(x=290, y=400)
+        Credits_button.place(x=320, y=500)
+        exit_button.place_forget()
+        Help_label.place_forget()
+        bg_label.config(image=menu_bg)
 
-    bot.place_forget()
-    bot2.place_forget()
-    bot4.place_forget()
-    label.place(x=240, y=0)
-    label2.place(x=10, y=300)
-    exit1 = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 12, "bold")
-                  ,justify=CENTER, command=Back)
-    exit1.place(x=700, y=540)
+    bg_label.config(image=how_bg)
+    Login_button.place_forget()
+    Help_button.place_forget()
+    Highscores_button.place_forget()
+    Credits_button.place_forget()
+    Help_label.place(x=10, y=300)
+    exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
+                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=Back)
+    exit_button.place(x=700, y=540)
 
-def Credits():
-    def Back():
-        bot.place(x=338, y=200)
-        bot2.place(x=345, y=300)
-        bot5.place(x=320, y=400)
-        bot4.place(x=320, y=500)
-        exit2.place_forget()
-        label3.place_forget()
-        credits_label.place_forget()
-    bot.place_forget()
-    bot2.place_forget()
-    bot4.place_forget()
-    bot5.place_forget()
-    label3.place(x=300, y=0)
-    credits_label.place(x=200, y=100)
-    exit2 = Button(master, text="Back to\nmenu",fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 12, "bold"),
-                  justify=CENTER, command=Back)
-    exit2.place(x=700, y=540)
 
 def Highscores():
     def Back():
-        pos1.place_forget()
-        pos2.place_forget()
-        pos3.place_forget()
-        pos4.place_forget()
-        pos5.place_forget()
-        pos6.place_forget()
-        pos7.place_forget()
-        exit3.place_forget()
-        bot.place(x=338, y=200)
-        bot2.place(x=345, y=300)
-        bot5.place(x=320, y=400)
-        bot4.place(x=320, y=500)
-    bot.place_forget()
-    bot2.place_forget()
-    bot4.place_forget()
-    bot5.place_forget()
+        Highscore_Label.place_forget()
+        exit_button.place_forget()
+        Login_button.place(x=338, y=200)
+        Help_button.place(x=345, y=300)
+        Highscores_button.place(x=290, y=400)
+        Credits_button.place(x=320, y=500)
+        bg_label.config(image=menu_bg)
+
+    bg_label.config(image=highscore_bg)
+    Login_button.place_forget()
+    Help_button.place_forget()
+    Highscores_button.place_forget()
+    Credits_button.place_forget()
     list_scores = ReadFile()
-    exit3 = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 12, "bold"),
-                  justify=CENTER, command=Back)
-    exit3.place(x=700, y=540)
+    exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
+                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=Back)
+    exit_button.place(x=700, y=540)
 
-    pos1 = Message(
+    Highscore_Label = Message(
         text="1. " + list_scores[0].split(",")[0] + ", " + list_scores[0].split(",")[1] + " points " + "Level: " +
-             list_scores[0].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
+             list_scores[0].split(",")[2] +
+             "2. " + list_scores[1].split(",")[0] + ", " + list_scores[1].split(",")[1] + " points " + "Level: " +
+             list_scores[1].split(",")[2] +
+             "3. " + list_scores[2].split(",")[0] + ", " + list_scores[2].split(",")[1] + " points " + "Level: " +
+             list_scores[2].split(",")[2] +
+             "4. " + list_scores[3].split(",")[0] + ", " + list_scores[3].split(",")[1] + " points " + "Level: " +
+             list_scores[3].split(",")[2] +
+             "5. " + list_scores[4].split(",")[0] + ", " + list_scores[4].split(",")[1] + " points " + "Level: " +
+             list_scores[4].split(",")[2] +
+             "6. " + list_scores[5].split(",")[0] + ", " + list_scores[5].split(",")[1] + " points " + "Level: " +
+             list_scores[5].split(",")[2] +
+             "7. " + list_scores[6].split(",")[0] + ", " + list_scores[6].split(",")[1] + " points " + "Level: " +
+             list_scores[6].split(",")[2], fg="#0051ff", bg="black", font=("Impact", 25), justify=CENTER,
         width=1000)
-    pos1.place(x=5, y=200)  # Score #1
+    Highscore_Label.place(x=55, y=180)  # Score #1
 
-    pos2 = Message(
-        text="2. " + list_scores[1].split(",")[0] + ", " + list_scores[1].split(",")[1] + " points " + "Level: " +
-             list_scores[1].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
-        width=1000)
-    pos2.place(x=5, y=250)  # Score #2
 
-    pos3 = Message(
-        text="3. " + list_scores[2].split(",")[0] + ", " + list_scores[2].split(",")[1] + " points " + "Level: " +
-             list_scores[2].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
-        width=1000)
-    pos3.place(x=5, y=300)  # Score #3
+def Credits():
+    def Back():
+        Login_button.place(x=338, y=200)
+        Help_button.place(x=345, y=300)
+        Highscores_button.place(x=290, y=400)
+        Credits_button.place(x=320, y=500)
+        exit_button.place_forget()
+        credits_label.place_forget()
+        bg_label.config(image=menu_bg)
 
-    pos4 = Message(
-        text="4. " + list_scores[3].split(",")[0] + ", " + list_scores[3].split(",")[1] + " points " + "Level: " +
-             list_scores[3].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
-        width=1000)
-    pos4.place(x=5, y=350)  # Score #4
-
-    pos5 = Message(
-        text="5. " + list_scores[4].split(",")[0] + ", " + list_scores[4].split(",")[1] + " points " + "Level: " +
-             list_scores[4].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
-        width=1000)
-    pos5.place(x=5, y=400)  # Score #5
-
-    pos6 = Message(
-        text="6. " + list_scores[5].split(",")[0] + ", " + list_scores[5].split(",")[1] + " points " + "Level: " +
-             list_scores[5].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
-        width=1000)
-    pos6.place(x=5, y=450)  # Score #6
-
-    pos7 = Message(
-        text="7. " + list_scores[6].split(",")[0] + ", " + list_scores[6].split(",")[1] + " points " + "Level: " +
-             list_scores[6].split(",")[2], fg="gold", bg="black", font=("Comic Sans MS", 20, "bold"), justify=CENTER,
-        width=1000)
-    pos7.place(x=5, y=500)  # Score #7
-
+    bg_label.config(image=credits_bg)
+    Login_button.place_forget()
+    Help_button.place_forget()
+    Highscores_button.place_forget()
+    Credits_button.place_forget()
+    credits_label.place(x=200, y=100)
+    exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
+                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=Back)
+    exit_button.place(x=700, y=540)
 
 
 def ReadFile():
-    path="Scores.txt"
-    archive= open(path)
-    content=archive.readlines()
+    path = "Scores.txt"
+    archive = open(path)
+    content = archive.readlines()
     archive.close()
     return content
 
 
-
-
-bot = Button(master, text="Login", fg="blue"
-             , bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Play)
-bot.place(x=338, y=200)
-bot2 = Button(master, text="Help", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Help)
-bot2.place(x=345, y=300)
-bot4 = Button(master, text="Credits", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Credits)
-bot4.place(x=320, y=500)
-bot5 = Button(master, text="Highscores", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Highscores)
-bot5.place(x=320, y=400)
-label = Label(text="How to play", font=("Forte", 45, "bold"), bg="black", fg="green")
-label3 = Label(text="Credits", font=("Forte", 45, "bold"),bg="black", fg="green")
+login_bg = load_image("LoginBG.png")
+menu_bg = load_image("MenuBG.png")
+how_bg = load_image("HowtoBG.png")
+credits_bg = load_image("CreditsBG.png")
+highscore_bg = load_image("HighscoreBG.png")
+bg_label = Label(image=menu_bg)
+bg_label.place(x=-2, y=-2)
+name_entry = Entry(width=15, font=("Comic Sans MS", 22, "bold"), justify=CENTER)
+Login_button = Button(master, text="Login", fg="blue"
+                      , bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=login)
+Login_button.place(x=338, y=200)
+Help_button = Button(master, text="Help", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"),
+                     justify=CENTER, command=Help)
+Help_button.place(x=345, y=300)
+Credits_button = Button(master, text="Credits", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"),
+                        justify=CENTER, command=Credits)
+Credits_button.place(x=320, y=500)
+Highscores_button = Button(master, text="Highscores", fg="blue", bg="lightgrey",
+                           font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Highscores)
+Highscores_button.place(x=290, y=400)
 credits_label = Label(text="""Costa Rica
 
 Instituto Tecnológico de Costa Rica
@@ -319,14 +396,14 @@ Taller de Programación Grupo 03
 
 Prof. Leonardo Araya
 
-Versión alpha alv
+Versión alpha 0.5
 
 Christopher Jesus Castro
 Alí José Daniels
 Joel Andony Gómez
 
 2020""", font=("Forte", 18, "bold"))
-label2 = Label(text="""El juego comenzara en el momento en el que se oprima el botón de login, en
+Help_label = Label(text="""El juego comenzara en el momento en el que se oprima el botón de login, en
 este momento los "Avatars" empezaran a salir de la parte inferior de la
 pantalla, cada "Avatar" posee poderes y todos los "Avatars" dejan un total
 de alrededor de 75 monedas para que el jugador pueda usar para seguir
