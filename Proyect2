@@ -1,7 +1,7 @@
 #==================================Imports=======================================
 from tkinter import *
+from tkinter import messagebox
 import random
-import winsound
 import time
 #import pygame
 import os
@@ -181,9 +181,8 @@ def load_image(image_name):
     return PhotoImage(file=image_path)
 
 
-def login():
+def login(back_button):
     def back():
-        global welcome_label
         global NewGame_button
         global LoadGame_button
         global welcome_label2
@@ -197,7 +196,6 @@ def login():
         bg_label.config(image=menu_bg)
         name_entry.place_forget()
         login_button.place_forget()
-        welcome_label.place_forget()
         welcome_label2.place_forget()
         NewGame_button.place_forget()
         LoadGame_button.place_forget()
@@ -207,68 +205,83 @@ def login():
     def verify_name(name):
 
         if str(name) == "":
-            messagebox.showerror("Error", "Please enter a valid nickname, your name isn't a blank space")
+            messagebox.showerror("Error", "Please enter a valid nickname, your name cannot be a blank space")
         elif string_len(str(name), 0) > 9:
             messagebox.showerror("Error", "Please enter something shorter, not more than 9 characters")
         elif string_len(str(name), 0) < 3:
             messagebox.showerror("Error", "Please enter something longer, not less than 3 characters")
         else:
-            bg_label.place_forget()
             login_button.place_forget()
             name_entry.place_forget()
             login_screen()
-
+    global login_button
+    welcome_label2.place_forget()
+    NewGame_button.place_forget()
+    ChangeName_button.place_forget()
+    LoadGame_button.place_forget()
     bg_label.config(image=login_bg)
     Login_button.place_forget()
     Help_button.place_forget()
     Highscores_button.place_forget()
     Credits_button.place_forget()
-    exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
-                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=back)
-    exit_button.place(x=700, y=540)
-
     name_entry.place(x=266, y=200)
 
     login_button = Button(master, text="Login", fg="blue", bg="lightgrey",
-                          font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=lambda: verify_name(name_entry.get()))
+                          font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER,
+                          command=lambda: verify_name(name_entry.get()))
     login_button.place(x=550, y=205)
+    if not back_button:
+        exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
+                             font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=back)
+        exit_button.place(x=700, y=540)
+
 
 
 def login_screen():
 
-    global welcome_label
     global NewGame_button
     global LoadGame_button
     global ChangeName_button
     global welcome_label2
-    welcome_label = Label(text="Welcome", font=("Copperplate Gothic Bold", 48), bg="Black", fg="#6942f5")
-    welcome_label2 = Label(text=name_entry.get(), font=("Impact", 48), bg="Black", fg="white")
-    welcome_label.place(x=250, y=0)
+    global event
+    event = True
+    bg_label.config(image=welcome_bg)
+    welcome_label2.config(text=name_entry.get())
     welcome_label2.place(x=250, y=80)
-    NewGame_button = Button(master, text="New Game", fg="blue", bg="lightgrey",
-                            font=("Gill Sans Ultra Bold", 20), justify=CENTER)
     NewGame_button.place(x=200, y=200)
-    LoadGame_button = Button(master, text="Load Game", fg="blue", bg="lightgrey",
-                             font=("Gill Sans Ultra Bold", 20), justify=CENTER)
+    NewGame_button.config(command=lambda: play_game(False))
     LoadGame_button.place(x=420, y=200)
-    ChangeName_button = Button(master, text="Change Name", fg="blue", bg="lightgrey",
-                               font=("Gill Sans Ultra Bold", 20), justify=CENTER, command=login)
+    LoadGame_button.config(state=DISABLED)
     ChangeName_button.place(x=300, y=300)
 
+    name = ReadFile()
+    score_list = []
+    i = 0
+    while i < 7:
+        score_list.append(name[i].split(",")[0])
+        i = i+1
 
+    i = 0
+    while i < 7:
+        if score_list[i] == str(name_entry.get()):
+            LoadGame_button.config(state=ACTIVE, command=lambda: play_game(True))
+        i = i+1
 def string_len(string,result):
     if string=="":
         return result
     else:
         return string_len(string[1:],result+1)
 
-def play_game():
+
+def play_game(load):
     master.withdraw()
     pygame.mixer.music.load("MEGALOVANIA.mp3")
     pygame.mixer.music.play(-1)
     game.deiconify()
     w = Canvas(game, width=500, height=900, bg="blue")
     w.place(x=0, y=0)
+    if load:
+        w.config(bg="red")
     for i in range(6):
         lineX = w.create_rectangle(i * 100, 0, i * 100, 900, fill="black")
 
@@ -335,7 +348,7 @@ def Highscores():
              list_scores[6].split(",")[2], fg="#0051ff", bg="black", font=("Impact", 25), justify=CENTER,
         width=1000)
     Highscore_Label.place(x=55, y=180)  # Score #1
-
+    print(list_scores[0].split(",")[0])
 
 def Credits():
     def Back():
@@ -371,11 +384,19 @@ menu_bg = load_image("MenuBG.png")
 how_bg = load_image("HowtoBG.png")
 credits_bg = load_image("CreditsBG.png")
 highscore_bg = load_image("HighscoreBG.png")
+welcome_bg = load_image("WelcomeBG.png")
 bg_label = Label(image=menu_bg)
 bg_label.place(x=-2, y=-2)
 name_entry = Entry(width=15, font=("Comic Sans MS", 22, "bold"), justify=CENTER)
+welcome_label2 = Label(text="", font=("Impact", 48), bg="black", fg="white")
+NewGame_button = Button(master, text="New Game", fg="blue",
+                        bg="lightgrey", font=("Gill Sans Ultra Bold", 20), justify=CENTER)
+LoadGame_button = Button(master, text="Load Game", fg="blue",
+                         bg="lightgrey", font=("Gill Sans Ultra Bold", 20), justify=CENTER)
+ChangeName_button = Button(master, text="Change Name", fg="blue", bg="lightgrey",
+                               font=("Gill Sans Ultra Bold", 20), justify=CENTER, command=lambda: login(True))
 Login_button = Button(master, text="Login", fg="blue"
-                      , bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=login)
+                      , bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=lambda: login(False))
 Login_button.place(x=338, y=200)
 Help_button = Button(master, text="Help", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"),
                      justify=CENTER, command=Help)
@@ -396,7 +417,7 @@ Taller de Programación Grupo 03
 
 Prof. Leonardo Araya
 
-Versión alpha 0.5
+Versión alpha 0.8
 
 Christopher Jesus Castro
 Alí José Daniels
@@ -415,3 +436,4 @@ debido a que poseen poderes diferentes. Por último el dinero se estara
 generando periódicamente en valores de 25,50,100. Suerte :)""", font=("Gill Sans Ultra Bold", 12))
 
 master.mainloop()
+
