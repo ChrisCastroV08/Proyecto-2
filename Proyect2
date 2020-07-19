@@ -152,7 +152,10 @@ def hilo1():
     t1.start()
 #=============================== Definición de la ventana ================================== 
 
+event3 = False
+pause = False
 
+posiciones = [100,200,300]
 master = Tk()
 master.title("Proyecto 2")
 master.geometry("800x600")
@@ -160,6 +163,9 @@ master.configure(bg="black")
 master.resizable(False, False)
 game = Toplevel()
 game.geometry("650x900")
+game.resizable(False, False)
+w = Canvas(game, width=500, height=900, bg="blue")
+w.place(x=0, y=0)
 game.withdraw()
 
 sys.setrecursionlimit(100000)  # Increases the recursion limit
@@ -170,7 +176,8 @@ pygame.mixer.music.play(-1)  # The minus 1 loops the song
 
 
 def on_closing():
-    game.withdraw()
+
+    game.destroy()
     master.deiconify()
     pygame.mixer.music.load("Menu Music.mp3")
     pygame.mixer.music.play(-1)
@@ -278,8 +285,7 @@ def play_game(load):
     pygame.mixer.music.load("MEGALOVANIA.mp3")
     pygame.mixer.music.play(-1)
     game.deiconify()
-    w = Canvas(game, width=500, height=900, bg="blue")
-    w.place(x=0, y=0)
+    game.protocol("WM_DELETE_WINDOW", on_closing)
     if load:
         w.config(bg="red")
     for i in range(6):
@@ -287,7 +293,34 @@ def play_game(load):
 
     for j in range(10):
         lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
-    game.protocol("WM_DELETE_WINDOW", on_closing)
+
+
+    arquero1()
+
+def arquero1():
+    global pause
+    nivel = 1
+    idx = 0
+
+    if not pause:
+        if nivel == 1:
+            for i in range(0,4):
+                w.move(arqueros[i], 0, -100)
+        elif nivel == 2:
+            for i in range(5,9):
+                w.move(arqueros[i], 0, -100)
+
+        elif nivel == 3:
+            for i in range(10,14):
+                w.move(arqueros[i], 0, -100)
+
+    if not event3:
+        game.after(1000, arquero1)
+def canibal1():
+
+    w.move(canibal, 0, -100)
+    game.after(1000, canibal1)
+
 
 
 def Help():
@@ -385,6 +418,25 @@ how_bg = load_image("HowtoBG.png")
 credits_bg = load_image("CreditsBG.png")
 highscore_bg = load_image("HighscoreBG.png")
 welcome_bg = load_image("WelcomeBG.png")
+
+arquero_img = load_image("arquero.png")
+escudero_img = load_image("escudero.png")
+canibal_img = load_image("canibal.png")
+
+arqueros = []
+i = 0
+x = 0
+while i <= 4:
+    arqueros.append(w.create_image(x, posiciones[random.randint(0,len(posiciones)-1)]*10, anchor=NW, image=arquero_img))
+    x = x+100
+    i = i+1
+
+
+escudero = w.create_image(0, 0, anchor=NW, image=escudero_img)
+w.move(escudero, 100, 900)
+canibal = w.create_image(0, 0, anchor=NW, image=canibal_img)
+w.move(canibal, 200, 500)
+
 bg_label = Label(image=menu_bg)
 bg_label.place(x=-2, y=-2)
 name_entry = Entry(width=15, font=("Comic Sans MS", 22, "bold"), justify=CENTER)
