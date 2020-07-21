@@ -9,67 +9,74 @@ import threading
 from threading import Thread
 
 #============================= Variables globales ===============================
-posiciones=[[0,100,200,300,400],[0,100,200,300,400,500,600,700,800,900,1000]] #La primera sublista son las posiciones en X, la segunda en Y
 monedas=150
 enemigos=[]
+enemigosImg=[]
 torres=[]
-
+imagen=[]
+imagen2=[]
+posiciones=[[0,100,200,300,400,500],[0,100,200,300,400,500,600,700,800,900]] #La primera sublista son las posiciones en X, la segunda en Y
+posiciones_usadas=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+posiciones_entidades=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+colocar_torre=False
+eliminar_torre=False
+elegir_torre=False
+tiempo=0.00
+tipos_rooks=["SandRook.png","RockRook.png","FireRook.png","WaterRook.png"]
+imagenes_rooks=[]
+x,y = 0,0
+event = False
+pause = False
+new_game = False
+taim = -1
+nivel = 1
+save = ""
+v = 0
+save_list = []
+posiciones = [100,200,300]
+arqueros1 = []
+arqueros2 = []
+arqueros3 = []
+canibales = []
 
 #=========================== Definición de clases ===============================
 
 class Avatars(): #Esta clase es la base para crar a los avatar
-	pass
-	global posiciones
-	global archerImg
-	
+    pass
+    global posiciones
+    global archerImg
+    
 
-	def __init__(self, ataque, resistencia, tiempoEspera, tiempoAtaque, sprite):
-		self.ataque = ataque
-		self.resistencia = resistencia
-		self.tiempoEspera = tiempoEspera
-		self.tiempoAtaque = tiempoAtaque
-		self.posx = posiciones[0][random.randint(0,4)]
-		self.sprite=LoadImage(sprite)
+    def __init__(self, ataque, resistencia, tiempoEspera, tiempoAtaque, sprite):
+        self.ataque = ataque
+        self.resistencia = resistencia
+        self.tiempoEspera = tiempoEspera
+        self.tiempoAtaque = tiempoAtaque
+        self.posx = posiciones[0][random.randint(0,4)]
+        self.posy=500
+        self.sprite = load_image(sprite)
+        self.imagen = w.create_image(self.posx, self.posy, anchor=NW, image=self.sprite)
 
-		self.enPantalla = False
-		self.posy=600
-		self.velocidad=5
-		self.monedasObtenidas=75
-
-	def avanzar(self):
-		n=self.posy-100
-
-		while (self.posy>=self.posy-100*n) and self.posy>-100:
-			self.posy-=self.velocidad
-			self.sprite.place(x=self.posx, y=self.posy)
-
-			time.sleep(0.2)
-
-			if self.posy<n:
-				time.sleep(self.tiempoEspera-0.2)
-				n-=100
-
-			#print("La posicion del avatar es {} y en x {}".format(self.posy, self.posx))
-
+        self.enPantalla = False
+        self.velocidad=5
+        self.monedasObtenidas=75
 
 #=============================== Rooks ======================================
 
-class Rooks():	#Esta clase es la base para crear los rooks
-	def __init__(self, precio, potenciaAtaque,resistencia,generarRook,sprite):
-		self.precio = precio
-		self.resistencia = resistencia
-		self.potenciaAtaque = potenciaAtaque
-		self.generarRook = generarRook 
+class Rooks():  #Esta clase es la base para crear los rooks
+    pass
+    def __init__(self, precio, potenciaAtaque,resistencia,generado,sprite):
+        self.precio = precio
+        self.resistencia = resistencia
+        self.potenciaAtaque = potenciaAtaque
+        self.generado = generado 
+        self.posx=10000
+        self.posy=10000
+        self.sprite = load_image(sprite)
+        self.imagen = w.create_image(self.posx, self.posy, anchor=NW, image=self.sprite)
+        self.frecuenciaAtaque = 10
 
-		self.sprite = LoadImage(sprite)
-		self.frecuenciaAtaque = 10
-
-	def agregar(self):
-		pass
-
-	def eliminar(self):
-		pass
-
+torre=Rooks(50,  2, 12, True,"SandRook.png")
 
 
 #====================================== Funciones ==========================================
@@ -151,20 +158,6 @@ def hilo1():
     t1 = Thread(target=juego, args=())
     t1.start()
 #=============================== Definición de la ventana ================================== 
-
-event = False
-pause = False
-new_game = False
-taim = -1
-nivel = 1
-save = ""
-v = 0
-save_list = []
-posiciones = [100,200,300]
-arqueros1 = []
-arqueros2 = []
-arqueros3 = []
-canibales = []
 
 master = Tk()
 master.title("Proyecto 2")
@@ -351,7 +344,92 @@ def play_game(load, name):
         pause = False
         new_game = True
         crear_avatars(False, 1)
+	
+    juego():
+    
+    
+def juego():
 
+    def click_izquierdo(event):
+        global colocar_torre
+        global elegir_torre
+        global x, y
+        global torre
+    
+        if x<=posiciones[0][len(posiciones[0])-1] and posiciones[1][0]<=y<=posiciones[1][len(posiciones[1])-1] and torre.generado==False:
+            colocar_torre=True
+            #print("colocar_torre = {}".format(colocar_torre))
+    
+        elif x>posiciones[0][len(posiciones[0])-1] and posiciones[1][2]<=y<=posiciones[1][6]:
+            elegir_torre =True
+    
+        #print("{} {}".format(colocar_torre, elegir_torre))
+    
+    def click_derecho(event):
+        global eliminar_torre
+        global x,y
+    
+        eliminar_torre=True
+    
+    def motion(event):
+        global tiempo
+        global colocar_torre, elegir_torre, eliminar_torre
+        global x,y
+        global torre, monedas
+        
+        x, y = event.x, event.y
+    
+        #for n in range(len(posiciones_entidades)):
+        for i in range(len(posiciones[0])-1):
+            for j in range(len(posiciones[1])-1):
+    
+    
+                if x>=posiciones[0][len(posiciones[0])-1] and posiciones[1][j]<=y<=posiciones[1][j+1] and elegir_torre==True:
+                    if j==2:
+                        torre=Rooks(50,  2, 12, False,"SandRook.png")
+                    if j==3:
+                        torre=Rooks(100, 4, 14, False,"RockRook.png")
+                    if j==4:
+                        torre=Rooks(150, 8, 16, False,"FireRook.png")
+                    if j==5:
+                        torre=Rooks(150, 8, 16, False,"WaterRook.png")
+                    elegir_torre=False
+    
+                if posiciones[0][i]<=x<=posiciones[0][i+1] and posiciones[1][j]<=y<=posiciones[1][j+1]:
+                    
+                    if posiciones_usadas[j][i]==0 and colocar_torre==True and torre.generado==False:
+                        if monedas>=torre.precio:
+                            posiciones_entidades[j][i]=torre
+                            posiciones_entidades[j][i].posx,torre.posy = posiciones[0][i], posiciones[1][j]
+                            
+                            posiciones_usadas[j][i]=1
+            
+                            w.moveto(posiciones_entidades[j][i].imagen, posiciones_entidades[j][i].posx, posiciones_entidades[j][i].posy)
+        
+                            posiciones_entidades[j][i].generado=True
+                            torre.generado=True
+                            colocar_torre=False
+                            monedas-=torre.precio
+
+                        else:
+                            colocar_torre=False
+                            print("No tienes monedas suficientes")
+
+                        print("Monedas = {}".format(monedas))
+
+                    elif posiciones_usadas[j][i]==1 and eliminar_torre==True :
+        
+                        w.moveto(posiciones_entidades[j][i].imagen, 10000, 10000)
+        
+                        posiciones_entidades[j][i]=0
+                        posiciones_usadas[j][i]=0
+        
+                        eliminar_torre=False
+
+        
+    w.bind('<Motion>', motion)
+    w.bind("<Button-1>", click_izquierdo)
+    w.bind("<Button-3>", click_derecho)
 
 def save_game():
     global pause
@@ -641,7 +719,7 @@ Versión alpha 0.8
 
 Christopher Jesus Castro
 Alí José Daniels
-Joel Andony Gómez
+Andony Joel Gómez
 
 2020""", font=("Forte", 18, "bold"))
 Help_label = Label(text="""El juego comenzara en el momento en el que se oprima el botón de login, en
