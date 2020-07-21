@@ -152,10 +152,20 @@ def hilo1():
     t1.start()
 #=============================== Definición de la ventana ================================== 
 
-event3 = False
+event = False
 pause = False
-
+new_game = False
+taim = -1
+nivel = 1
+save = ""
+v = 0
+save_list = []
 posiciones = [100,200,300]
+arqueros1 = []
+arqueros2 = []
+arqueros3 = []
+canibales = []
+
 master = Tk()
 master.title("Proyecto 2")
 master.geometry("800x600")
@@ -166,22 +176,56 @@ game.geometry("650x900")
 game.resizable(False, False)
 w = Canvas(game, width=500, height=900, bg="blue")
 w.place(x=0, y=0)
+for i in range(6):
+    lineX = w.create_rectangle(i * 100, 0, i * 100, 900, fill="black")
+for j in range(10):
+    lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
 game.withdraw()
-
 sys.setrecursionlimit(100000)  # Increases the recursion limit
 pygame.init()
 pygame.mixer.init()
 pygame.mixer.music.load("Menu Music.mp3")
 pygame.mixer.music.play(-1)  # The minus 1 loops the song
 
-
+def menu():
+    global save_file
+    Login_button.place(x=338, y=200)
+    Help_button.place(x=345, y=300)
+    Highscores_button.place(x=290, y=400)
+    Credits_button.place(x=320, y=500)
+    credits_label.place_forget()
+    highscore_label.place_forget()
+    Help_label.place_forget()
+    name_entry.place_forget()
+    exit_button.place_forget()
+    login_button.place_forget()
+    welcome_label2.place_forget()
+    NewGame_button.place_forget()
+    LoadGame_button.place_forget()
+    ChangeName_button.place_forget()
+    save_file = ReadFile("Saves.txt")
+    save_list.clear()
+    bg_label.config(image=menu_bg)
 def on_closing():
+    global pause
+    pause = True
+    pygame.mixer.music.stop()
+    exit = messagebox.askyesno("Quit", "Are you sure you want to quit? (Make sure to save your progress)")
 
-    game.destroy()
-    master.deiconify()
-    pygame.mixer.music.load("Menu Music.mp3")
-    pygame.mixer.music.play(-1)
+    if exit:
+        game.withdraw()
+        master.deiconify()
+        pygame.mixer.music.load("Menu Music.mp3")
+        pygame.mixer.music.play(-1)
+        menu()
 
+    else:
+        pause = False
+        pygame.mixer.music.load("MEGALOVANIA.mp3")
+        pygame.mixer.music.play(-1)
+        arquero1()
+        canibal1()
+        tiempo()
 
 def load_image(image_name):
     image_path = os.path.join("Images", image_name)
@@ -208,9 +252,7 @@ def login(back_button):
         LoadGame_button.place_forget()
         ChangeName_button.place_forget()
 
-
     def verify_name(name):
-
         if str(name) == "":
             messagebox.showerror("Error", "Please enter a valid nickname, your name cannot be a blank space")
         elif string_len(str(name), 0) > 9:
@@ -222,6 +264,10 @@ def login(back_button):
             name_entry.place_forget()
             login_screen()
     global login_button
+    global welcome_label2
+    global NewGame_button
+    global ChangeName_button
+    global LoadGame_button
     welcome_label2.place_forget()
     NewGame_button.place_forget()
     ChangeName_button.place_forget()
@@ -232,139 +278,320 @@ def login(back_button):
     Highscores_button.place_forget()
     Credits_button.place_forget()
     name_entry.place(x=266, y=200)
-
-    login_button = Button(master, text="Login", fg="blue", bg="lightgrey",
-                          font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER,
-                          command=lambda: verify_name(name_entry.get()))
     login_button.place(x=550, y=205)
+    login_button.config(command = lambda: verify_name(name_entry.get()))
     if not back_button:
         exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
                              font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=back)
         exit_button.place(x=700, y=540)
 
 
-
 def login_screen():
-
     global NewGame_button
     global LoadGame_button
     global ChangeName_button
     global welcome_label2
-    global event
-    event = True
+    global event3
+    global save
+    global save_file
+    global save_list
     bg_label.config(image=welcome_bg)
     welcome_label2.config(text=name_entry.get())
     welcome_label2.place(x=250, y=80)
     NewGame_button.place(x=200, y=200)
-    NewGame_button.config(command=lambda: play_game(False))
+    NewGame_button.config(command=lambda: play_game(False, name_entry.get()))
     LoadGame_button.place(x=420, y=200)
     LoadGame_button.config(state=DISABLED)
     ChangeName_button.place(x=300, y=300)
-
-    name = ReadFile()
-    score_list = []
     i = 0
-    while i < 7:
-        score_list.append(name[i].split(",")[0])
+    save_list.clear()
+    while i < len(save_file):
+        save_list.append(save_file[i].split(",")[0])
+        i = i+1
+    i = 0
+    while i < len(save_list):
+        print(save_list)
+        if save_list[i] == str(name_entry.get()):
+            LoadGame_button.config(state=ACTIVE, command=lambda: play_game(True, save))
+            save = save_list[i]
         i = i+1
 
-    i = 0
-    while i < 7:
-        if score_list[i] == str(name_entry.get()):
-            LoadGame_button.config(state=ACTIVE, command=lambda: play_game(True))
-        i = i+1
-def string_len(string,result):
-    if string=="":
+
+def string_len(string, result):
+    if string == "":
         return result
     else:
         return string_len(string[1:],result+1)
 
 
-def play_game(load):
+def play_game(load, name):
+    global pause
+    global new_game
+    global save_file
     master.withdraw()
     pygame.mixer.music.load("MEGALOVANIA.mp3")
     pygame.mixer.music.play(-1)
     game.deiconify()
     game.protocol("WM_DELETE_WINDOW", on_closing)
+    save_button.place(x=520, y=0)
     if load:
-        w.config(bg="red")
-    for i in range(6):
-        lineX = w.create_rectangle(i * 100, 0, i * 100, 900, fill="black")
+        pause = False
+        new_game = False
+        if name == "Joel":
+            w.config(bg="red")
+            crear_avatars(True, save_file[0].split(",")[1])
+        elif name == "Chris":
+            w.config(bg="green")
+            crear_avatars(True, save_file[1].split(",")[1])
+        elif name == "Ali":
+            w.config(bg="yellow")
+            crear_avatars(True, save_file[2].split(",")[1])
 
-    for j in range(10):
-        lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
+    elif not load:
+        pause = False
+        new_game = True
+        crear_avatars(False, 1)
 
 
-    arquero1()
+def save_game():
+    global pause
+    global new_game
+    global nivel
+    pause = True
+    pygame.mixer.music.stop()
+
+    if new_game:
+        if messagebox.askyesno("Save", "Do you want to save your progress?"):
+            new_game=False
+            WriteSave(name_entry.get(), nivel, 1000)
+
+        else:
+            pause = False
+            pygame.mixer.music.load("MEGALOVANIA.mp3")
+            pygame.mixer.music.play(-1)
+            arquero1()
+            canibal1()
+
+    elif not new_game:
+        if messagebox.askyesno("Save", "Do you want to overwrite your progress?"):
+            ReWrite_save(name_entry.get(),nivel,3000)
+
+        else:
+            pause = False
+            pygame.mixer.music.load("MEGALOVANIA.mp3")
+            pygame.mixer.music.play(-1)
+            arquero1()
+            canibal1()
+
+
+def crear_avatars(loading, lvl):
+    global new_game
+    global nivel
+    global v
+    global save_file
+    nivel = int(lvl)
+    if not loading:
+        v = v + 1
+        i = 0
+        x = 0
+        if new_game and v > 1:
+            while i <= 4:
+                w.delete(arqueros1[i])
+                w.delete(canibales[i])
+                i = i+1
+            arqueros1.clear()
+            canibales.clear()
+        elif not new_game:
+            return
+        i = 0
+        while i <= 4:
+            arqueros1.append(
+                w.create_image(x, posiciones[random.randint(0, len(posiciones) - 1)] * 10, anchor=NW, image=arquero_img))
+
+            canibales.append(
+                w.create_image(x, posiciones[random.randint(0, len(posiciones) - 1)] * 10, anchor=NW, image=canibal_img))
+            x = x + 100
+            i = i + 1
+        tiempo()
+        arquero1()
+        canibal1()
+
+    else:
+        arqueros1.clear()
+        x = 0
+        i = 0
+        while i <= 4:
+            arqueros1.append(
+                w.create_image(x, save_file[0].split(",")[2], anchor=NW,
+                               image=arquero_img))
+            x = x + 100
+            i = i + 1
+        arquero1()
+
+
+def tiempo():
+    global taim
+    global pause
+
+    if not pause:
+        taim = taim+1
+        print(taim)
+        game.after(1000, tiempo)
 
 def arquero1():
+    global new_game
     global pause
-    nivel = 1
+    global nivel
     idx = 0
+    if not pause:
+        if nivel == 1:
+            for i in range(0,5):
+                w.move(arqueros1[i], 0, -100)
+        elif nivel == 2:
+            for i in range(6,10):
+                w.move(arqueros2[i], 0, -100)
+        elif nivel == 3:
+            for i in range(11,15):
+                w.move(arqueros3[i], 0, -100)
 
+        game.after(1000, arquero1)
+
+def canibal1():
+    global new_game
+    global pause
+    #global nivel
+    idx = 0
     if not pause:
         if nivel == 1:
             for i in range(0,4):
-                w.move(arqueros[i], 0, -100)
+                w.move(canibales[i], 0, -100)
         elif nivel == 2:
             for i in range(5,9):
-                w.move(arqueros[i], 0, -100)
-
+                w.move(canibales[i], 0, -100)
         elif nivel == 3:
             for i in range(10,14):
-                w.move(arqueros[i], 0, -100)
+                w.move(canibales[i], 0, -100)
 
-    if not event3:
-        game.after(1000, arquero1)
-def canibal1():
-
-    w.move(canibal, 0, -100)
-    game.after(1000, canibal1)
-
-
-
+        game.after(1000, canibal1)
 def Help():
-    def Back():
-        Login_button.place(x=338, y=200)
-        Help_button.place(x=345, y=300)
-        Highscores_button.place(x=290, y=400)
-        Credits_button.place(x=320, y=500)
-        exit_button.place_forget()
-        Help_label.place_forget()
-        bg_label.config(image=menu_bg)
-
     bg_label.config(image=how_bg)
     Login_button.place_forget()
     Help_button.place_forget()
     Highscores_button.place_forget()
     Credits_button.place_forget()
     Help_label.place(x=10, y=300)
-    exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
-                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=Back)
     exit_button.place(x=700, y=540)
+    print(len(save_file))
 
 
 def Highscores():
-    def Back():
-        Highscore_Label.place_forget()
-        exit_button.place_forget()
-        Login_button.place(x=338, y=200)
-        Help_button.place(x=345, y=300)
-        Highscores_button.place(x=290, y=400)
-        Credits_button.place(x=320, y=500)
-        bg_label.config(image=menu_bg)
-
     bg_label.config(image=highscore_bg)
     Login_button.place_forget()
     Help_button.place_forget()
     Highscores_button.place_forget()
     Credits_button.place_forget()
-    list_scores = ReadFile()
-    exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
-                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=Back)
+    exit_button.place(x=700, y=540)
+    highscore_label.place(x=55, y=180)
+
+
+def Credits():
+    bg_label.config(image=credits_bg)
+    Login_button.place_forget()
+    Help_button.place_forget()
+    Highscores_button.place_forget()
+    Credits_button.place_forget()
+    credits_label.place(x=200, y=100)
     exit_button.place(x=700, y=540)
 
-    Highscore_Label = Message(
+
+def ReadFile(path):
+    archive = open(path)
+    content = archive.readlines()
+    archive.close()
+    return content
+
+#--------------------------------------------------------------------------------------------------------------------------
+
+
+def WriteSave(name, level, arc1):
+    global save_file
+    global pause
+    file = open("Saves.txt", 'r+')
+    file.read()
+    file.write('\n'+str(name)+","+str(level)+","+str(arc1))
+    file.close()
+    pause = False
+    pygame.mixer.music.load("MEGALOVANIA.mp3")
+    pygame.mixer.music.play(-1)
+    arquero1()
+    canibal1()
+'''
+def WriteScores(name,level):
+    writethis= ReWrite(ReadFile(),name,level,0,len(ReadFile()),"")
+    path="Scores.txt"
+    file=open(path,"w")
+    file.write(str(writethis))
+    file.close()
+
+
+def ReWrite_score(score_list,name,level,i,length,result):
+    global score
+    if i==length:
+        return result
+    elif int(score_list[i].split(",")[1])<=score:
+        new_index= name+","+str(score)+","+level+"\n"
+        return ReWrite(score_list,name,level,length,length,result+new_index+AddTheRest(score_list[i:length-1],0,len(score_list[i:length-1]),""))
+    else:
+        return ReWrite(score_list,name,level,i+1,length,result+score_list[i])
+
+'''
+def ReWrite_save(name,level,arc1):
+    global save_file
+    global pause
+    my_file = open("Saves.txt")
+    string_list = my_file.readlines()
+    my_file.close()
+    i = 0
+    while i < len(save_file):
+        if string_list[i].split(",")[0] == save_file[i].split(",")[0]:
+            string_list[i] = str(name) + "," + str(level) + "," + str(arc1) + '\n'
+            my_file = open("Saves.txt", "w")
+            new_file = "".join(string_list)
+            my_file.write(new_file)
+            my_file.close()
+            pause = False
+            pygame.mixer.music.load("MEGALOVANIA.mp3")
+            pygame.mixer.music.play(-1)
+            arquero1()
+        i = i+1
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+
+save_file = ReadFile("Saves.txt")
+list_scores = ReadFile("Scores.txt")
+
+login_bg = load_image("LoginBG.png")
+menu_bg = load_image("MenuBG.png")
+how_bg = load_image("HowtoBG.png")
+credits_bg = load_image("CreditsBG.png")
+highscore_bg = load_image("HighscoreBG.png")
+welcome_bg = load_image("WelcomeBG.png")
+arquero_img = load_image("arquero.png")
+escudero_img = load_image("escudero.png")
+canibal_img = load_image("canibal.png")
+
+escudero = w.create_image(0, 0, anchor=NW, image=escudero_img)
+w.move(escudero, 100, 900)
+bg_label = Label(image=menu_bg)
+bg_label.place(x=-2, y=-2)
+name_entry = Entry(width=15, font=("Comic Sans MS", 22, "bold"), justify=CENTER)
+welcome_label2 = Label(text="", font=("Impact", 48), bg="black", fg="white")
+exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
+                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=menu)
+login_button = Button(master, text="Login", fg="blue", bg="lightgrey",
+                          font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER)
+highscore_label = Message(
         text="1. " + list_scores[0].split(",")[0] + ", " + list_scores[0].split(",")[1] + " points " + "Level: " +
              list_scores[0].split(",")[2] +
              "2. " + list_scores[1].split(",")[0] + ", " + list_scores[1].split(",")[1] + " points " + "Level: " +
@@ -380,67 +607,8 @@ def Highscores():
              "7. " + list_scores[6].split(",")[0] + ", " + list_scores[6].split(",")[1] + " points " + "Level: " +
              list_scores[6].split(",")[2], fg="#0051ff", bg="black", font=("Impact", 25), justify=CENTER,
         width=1000)
-    Highscore_Label.place(x=55, y=180)  # Score #1
-    print(list_scores[0].split(",")[0])
-
-def Credits():
-    def Back():
-        Login_button.place(x=338, y=200)
-        Help_button.place(x=345, y=300)
-        Highscores_button.place(x=290, y=400)
-        Credits_button.place(x=320, y=500)
-        exit_button.place_forget()
-        credits_label.place_forget()
-        bg_label.config(image=menu_bg)
-
-    bg_label.config(image=credits_bg)
-    Login_button.place_forget()
-    Help_button.place_forget()
-    Highscores_button.place_forget()
-    Credits_button.place_forget()
-    credits_label.place(x=200, y=100)
-    exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
-                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=Back)
-    exit_button.place(x=700, y=540)
 
 
-def ReadFile():
-    path = "Scores.txt"
-    archive = open(path)
-    content = archive.readlines()
-    archive.close()
-    return content
-
-
-login_bg = load_image("LoginBG.png")
-menu_bg = load_image("MenuBG.png")
-how_bg = load_image("HowtoBG.png")
-credits_bg = load_image("CreditsBG.png")
-highscore_bg = load_image("HighscoreBG.png")
-welcome_bg = load_image("WelcomeBG.png")
-
-arquero_img = load_image("arquero.png")
-escudero_img = load_image("escudero.png")
-canibal_img = load_image("canibal.png")
-
-arqueros = []
-i = 0
-x = 0
-while i <= 4:
-    arqueros.append(w.create_image(x, posiciones[random.randint(0,len(posiciones)-1)]*10, anchor=NW, image=arquero_img))
-    x = x+100
-    i = i+1
-
-
-escudero = w.create_image(0, 0, anchor=NW, image=escudero_img)
-w.move(escudero, 100, 900)
-canibal = w.create_image(0, 0, anchor=NW, image=canibal_img)
-w.move(canibal, 200, 500)
-
-bg_label = Label(image=menu_bg)
-bg_label.place(x=-2, y=-2)
-name_entry = Entry(width=15, font=("Comic Sans MS", 22, "bold"), justify=CENTER)
-welcome_label2 = Label(text="", font=("Impact", 48), bg="black", fg="white")
 NewGame_button = Button(master, text="New Game", fg="blue",
                         bg="lightgrey", font=("Gill Sans Ultra Bold", 20), justify=CENTER)
 LoadGame_button = Button(master, text="Load Game", fg="blue",
@@ -487,5 +655,11 @@ colocar en cada casilla a cambio de dinero, cada "Rook" cuesta diferente,
 debido a que poseen poderes diferentes. Por último el dinero se estara
 generando periódicamente en valores de 25,50,100. Suerte :)""", font=("Gill Sans Ultra Bold", 12))
 
+
+save_button = Button(game, text="Save", fg="blue", bg="lightgrey",
+                           font=("Gill Sans Ultra Bold", 18), justify=CENTER, command=save_game)
+
+
 master.mainloop()
+
 
