@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import messagebox
 import random
 import time
-#import pygame
+import pygame
 import os
 import threading
 from threading import Thread
@@ -39,7 +39,30 @@ arqueros2 = []
 arqueros3 = []
 canibales = []
 
+master = Tk()
+master.title("Proyecto 2")
+master.geometry("800x600")
+master.configure(bg="black")
+master.resizable(False, False)
+game = Toplevel()
+game.geometry("650x900")
+game.resizable(False, False)
+w = Canvas(game, width=500, height=900, bg="blue")
+w.place(x=0, y=0)
+for i in range(6):
+    lineX = w.create_rectangle(i * 100, 0, i * 100, 900, fill="black")
+for j in range(10):
+    lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
+game.withdraw()
+sys.setrecursionlimit(100000)  # Increases the recursion limit
+pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("Menu Music.mp3")
+pygame.mixer.music.play(-1)  # The minus 1 loops the song
 #=========================== Definición de clases ===============================
+def load_image(image_name):
+    image_path = os.path.join("Images", image_name)
+    return PhotoImage(file=image_path)
 
 class Avatars(): #Esta clase es la base para crar a los avatar
     pass
@@ -81,104 +104,80 @@ torre=Rooks(50,  2, 12, True,"SandRook.png")
 
 #====================================== Funciones ==========================================
 
-def crear_avatars(cantidad_enemigos, n):	#Crea el avatar especificado
-	global enemigos
-	#n=random.randint(1,4)
+def crear_avatars(cantidad_enemigos, n):    #Crea el avatar especificado
+    global enemigos
+    #n=random.randint(1,4)
 
-	#for i in range(20):
-	if n==1:
-		avatar_creado = Avatars(2, 5,12,10,"arquero.png")
-	if n==2:
-		avatar_creado = Avatars(3,10,10,15,"escudero.png")
-	if n==3:
-		avatar_creado = Avatars(9,20,13,5,"lenador.png")
-	if n==4:
-		avatar_creado = Avatars(12,25,14,3,"canibal.png")
+    #for i in range(20):
+    if n==1:
+        avatar_creado = Avatars(2, 5,12,10,"arquero.png")
+    if n==2:
+        avatar_creado = Avatars(3,10,10,15,"escudero.png")
+    if n==3:
+        avatar_creado = Avatars(9,20,13,5,"lenador.png")
+    if n==4:
+        avatar_creado = Avatars(12,25,14,3,"canibal.png")
 
-	enemigos.append(avatar_creado)
+    enemigos.append(avatar_creado)
 
-	for i in range(len(enemigos)):
-		enemigos[i].sprite.place(x=enemigos[i].posx, y=enemigos[i].posy)
-		#print(enemigos[i].ataque)
-		#time.sleep(4)
-	#hilo1()
+    for i in range(len(enemigos)):
+        enemigos[i].sprite.place(x=enemigos[i].posx, y=enemigos[i].posy)
+        #print(enemigos[i].ataque)
+        #time.sleep(4)
+    #hilo1()
 
-def LoadImage(sprite):	#Retorna la imagen en con el nombre especificado
-	route = os.path.join(sprite)
-	imageImg = PhotoImage(file=route)
-	image = Label(master, image=imageImg,  borderwidth=0)
 
-	return image
+    return image
 
-def juego():	#Ejecuta los elementos generales del juego
-	global enemigos
-	global torres
-	juegoIniciado=True
-	#n=archer.posy-100
+def juego():    #Ejecuta los elementos generales del juego
+    global enemigos
+    global torres
+    juegoIniciado=True
+    #n=archer.posy-100
 
-	while juegoIniciado:
-		time.sleep(0.5)
-		"""	for i in range(len(enemigos)):
-				enemigos[i].enPantalla=True"""
+    while juegoIniciado:
+        time.sleep(0.5)
+        """ for i in range(len(enemigos)):
+                enemigos[i].enPantalla=True"""
 
-		crear_avatars(20,random.randint(1,4))	#Crea un avatar luego de completar una iteración
-		
-		for n in range(len(enemigos)):	#Mueve los avatar
-			time.sleep(0.01)
-			enemigos[n].posy-=enemigos[n].velocidad
-			enemigos[n].sprite.place(x=enemigos[n].posx, y=enemigos[n].posy)
-			
+        crear_avatars(20,random.randint(1,4))   #Crea un avatar luego de completar una iteración
+        
+        for n in range(len(enemigos)):  #Mueve los avatar
+            time.sleep(0.01)
+            enemigos[n].posy-=enemigos[n].velocidad
+            enemigos[n].sprite.place(x=enemigos[n].posx, y=enemigos[n].posy)
+            
 
 
 
-			if enemigos[n].posy<=0:	#Termina el juego si algún avatar llega al otro lado de la pantalla
-				juegoIniciado=False
-				break
+            if enemigos[n].posy<=0: #Termina el juego si algún avatar llega al otro lado de la pantalla
+                juegoIniciado=False
+                break
 
 
-		"""if (archer.posy>=archer.posy-100*n) and archer.posy>-100:
-				archer.posy-=archer.velocidad
-				archer.sprite.place(x=archer.posx, y=archer.posy)
-				time.sleep(0.2)
-				
-				if archer.posy<n:
-					time.sleep(archer.tiempoEspera-0.2)
-					n-=100
-				
-				if n==0:
-					break"""
+        """if (archer.posy>=archer.posy-100*n) and archer.posy>-100:
+                archer.posy-=archer.velocidad
+                archer.sprite.place(x=archer.posx, y=archer.posy)
+                time.sleep(0.2)
+                
+                if archer.posy<n:
+                    time.sleep(archer.tiempoEspera-0.2)
+                    n-=100
+                
+                if n==0:
+                    break"""
 
-		"""if 
-			Rooks(50, 2, 12,False,"SandRook.png")
-			Rooks(100, 4, 14,False,"RockRook.png")
-			Rooks(150, 8, 16,False,"FireRook.png")
-			Rooks(150, 8, 16,False,"WaterRook.png")"""
+        """if 
+            Rooks(50, 2, 12,False,"SandRook.png")
+            Rooks(100, 4, 14,False,"RockRook.png")
+            Rooks(150, 8, 16,False,"FireRook.png")
+            Rooks(150, 8, 16,False,"WaterRook.png")"""
 
 def hilo1():
     t1 = Thread(target=juego, args=())
     t1.start()
 #=============================== Definición de la ventana ================================== 
 
-master = Tk()
-master.title("Proyecto 2")
-master.geometry("800x600")
-master.configure(bg="black")
-master.resizable(False, False)
-game = Toplevel()
-game.geometry("650x900")
-game.resizable(False, False)
-w = Canvas(game, width=500, height=900, bg="blue")
-w.place(x=0, y=0)
-for i in range(6):
-    lineX = w.create_rectangle(i * 100, 0, i * 100, 900, fill="black")
-for j in range(10):
-    lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
-game.withdraw()
-sys.setrecursionlimit(100000)  # Increases the recursion limit
-pygame.init()
-pygame.mixer.init()
-pygame.mixer.music.load("Menu Music.mp3")
-pygame.mixer.music.play(-1)  # The minus 1 loops the song
 
 def menu():
     global save_file
@@ -220,9 +219,6 @@ def on_closing():
         canibal1()
         tiempo()
 
-def load_image(image_name):
-    image_path = os.path.join("Images", image_name)
-    return PhotoImage(file=image_path)
 
 
 def login(back_button):
@@ -344,8 +340,8 @@ def play_game(load, name):
         pause = False
         new_game = True
         crear_avatars(False, 1)
-	
-    juego():
+    
+    juego()
     
     
 def juego():
@@ -739,5 +735,6 @@ save_button = Button(game, text="Save", fg="blue", bg="lightgrey",
 
 
 master.mainloop()
+
 
 
