@@ -132,6 +132,16 @@ class Rooks():  #Esta clase es la base para crear los rooks
 
 torre=Rooks(50,  2, 12, True,"SandRook.png")
 
+class MonedasAleatorias():#Esta vlase estáa definida para crear monedas aleatorias
+    def __init__(self, tipo):
+        self.posx=random.randint(60,440)
+        self.posy=random.randint(60,840)
+        self.tiempoInicial=0
+        self.tipo = tipo
+        self.icono=load_image(tipo)
+        self.imagen=w.create_image(self.posx, self.posy, anchor=NW, image=self.icono)
+        self.mostrar=True
+
 
 #====================================== Funciones ==========================================
 
