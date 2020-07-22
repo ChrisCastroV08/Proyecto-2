@@ -42,6 +42,23 @@ nivel=1
 cantidad_enemigos_por_derrotar=7
 cantidad_enemigos_derrotados=0
 tiempoAparicion=15
+posiciones=[[0,100,200,300,400,500],[0,100,200,300,400,500,600,700,800,900]] #La primera sublista son las posiciones en X, la segunda en Y
+posiciones_usadas=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+entidades=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+colocar_torre=False
+eliminar_torre=False
+elegir_torre=False
+monedas=1500
+tiempo=0
+tipos_rooks=["SandRook.png","RockRook.png","FireRook.png","WaterRook.png"]
+imagenes_rooks=[]
+x,y = 0,0
+monedasEnPantalla=[]
+derrota=False
+nivel=1
+cantidad_enemigos_por_derrotar=7
+cantidad_enemigos_derrotados=0
+tiempoAparicion=15
 
 master = Tk()
 master.title("Proyecto 2")
