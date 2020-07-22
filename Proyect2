@@ -1,47 +1,12 @@
-#==================================Imports=======================================
 from tkinter import *
 from tkinter import messagebox
-import random
-import time
-import pygame
+#import pygame
 import os
 import threading
 from threading import Thread
+import random
+import time
 
-#============================= Variables globales ===============================
-monedas=500
-posiciones=[[0,100,200,300,400,500],[0,100,200,300,400,500,600,700,800,900]] #La primera sublista son las posiciones en X, la segunda en Y
-posiciones_usadas=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
-posiciones_entidades=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
-colocar_torre=False
-eliminar_torre=False
-elegir_torre=False
-tiempo=0.00
-tipos_rooks=["SandRook.png","RockRook.png","FireRook.png","WaterRook.png"]
-imagenes_rooks=[]
-x,y = 0,0
-event = False
-pause = False
-new_game = False
-taim = -1
-nivel = 1
-save = ""
-v = 0
-save_list = []
-posiciones = [100,200,300]
-arqueros1 = []
-arqueros2 = []
-arqueros3 = []
-canibales = []
-tiempo=0
-tipos_rooks=["SandRook.png","RockRook.png","FireRook.png","WaterRook.png"]
-imagenes_rooks=[]
-monedasEnPantalla=[]
-derrota=False
-nivel=1
-cantidad_enemigos_por_derrotar=7
-cantidad_enemigos_derrotados=0
-tiempoAparicion=15
 posiciones=[[0,100,200,300,400,500],[0,100,200,300,400,500,600,700,800,900]] #La primera sublista son las posiciones en X, la segunda en Y
 posiciones_usadas=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
 entidades=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
@@ -59,63 +24,34 @@ nivel=1
 cantidad_enemigos_por_derrotar=7
 cantidad_enemigos_derrotados=0
 tiempoAparicion=15
-
+MonedasAleatorias
 master = Tk()
 master.title("Proyecto 2")
-master.geometry("800x600")
-master.configure(bg="black")
+master.geometry("600x800")
+master.configure(bg="white")
 master.resizable(False, False)
-game = Toplevel()
-game.geometry("650x900")
-game.resizable(False, False)
-w = Canvas(game, width=500, height=900, bg="#24571d")
+w = Canvas(master, width=600, height=800, bg='#203060')
 w.place(x=0, y=0)
-for i in range(6):
-    lineX = w.create_rectangle(i * 100, 0, i * 100, 900, fill="black")
-for j in range(10):
-    lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
-imagenSandRook  = w.create_image(500, posiciones[1][2], anchor=NW, image=imgSandRook)
-imagenRockRook  = w.create_image(500, posiciones[1][3], anchor=NW, image=imgRockRook)
-imagenFireRook  = w.create_image(500, posiciones[1][4], anchor=NW, image=imgFireRook)
-imagenWaterRook = w.create_image(500, posiciones[1][5], anchor=NW, image=imgWaterRook)
 
-game.withdraw()
-sys.setrecursionlimit(100000)  # Increases the recursion limit
-pygame.init()
-pygame.mixer.init()
-pygame.mixer.music.load("Menu Music.mp3")
-pygame.mixer.music.play(-1)  # The minus 1 loops the song
-#=========================== Definición de clases ===============================
-def load_image(image_name):
+def load_image(image_name): #Carga las imágenes del programa
     image_path = os.path.join("Images", image_name)
     return PhotoImage(file=image_path)
 
+#generación de las lineas de la matriz y elementos visuales
+for i in range(6):
+    lineX = w.create_rectangle(i * 100, 0, i * 100, 900, fill="black")
+
+for j in range(10):
+    lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
+ 
 imgSandRook = load_image(tipos_rooks[0])
 imgRockRook = load_image(tipos_rooks[1])
 imgFireRook = load_image(tipos_rooks[2])
 imgWaterRook = load_image(tipos_rooks[3])
-
-class Avatars(): #Esta clase es la base para crar a los avatar
-    pass
-    global posiciones
-    global archerImg
-    
-
-    def __init__(self, ataque, resistencia, tiempoEspera, tiempoAtaque, sprite):
-        self.ataque = ataque
-        self.resistencia = resistencia
-        self.tiempoEspera = tiempoEspera
-        self.tiempoAtaque = tiempoAtaque
-        self.posx = posiciones[0][random.randint(0,4)]
-        self.posy=500
-        self.sprite = load_image(sprite)
-        self.imagen = w.create_image(self.posx, self.posy, anchor=NW, image=self.sprite)
-
-        self.enPantalla = False
-        self.velocidad=5
-        self.monedasObtenidas=75
-
-#=============================== Rooks ======================================
+imagenSandRook  = w.create_image(500, posiciones[1][2], anchor=NW, image=imgSandRook)
+imagenRockRook  = w.create_image(500, posiciones[1][3], anchor=NW, image=imgRockRook)
+imagenFireRook  = w.create_image(500, posiciones[1][4], anchor=NW, image=imgFireRook)
+imagenWaterRook = w.create_image(500, posiciones[1][5], anchor=NW, image=imgWaterRook)
 
 class Rooks():  #Esta clase es la base para crear los rooks
     pass
@@ -129,8 +65,31 @@ class Rooks():  #Esta clase es la base para crear los rooks
         self.sprite = load_image(sprite)
         self.imagen = w.create_image(self.posx, self.posy, anchor=NW, image=self.sprite)
         self.frecuenciaAtaque = 10
+        self.tiempoInicial=0
+        self.destruida=False
+        self.k=0
+        
 
-torre=Rooks(50,  2, 12, True,"SandRook.png")
+class Avatars(): #Esta clase es la base para crar a los avatar
+    pass
+    global posiciones
+    global archerImg
+    
+
+    def __init__(self, ataque, resistencia, tiempoEspera, tiempoAtaque, sprite, tipo):
+        self.ataque = ataque
+        self.resistencia = resistencia
+        self.tiempoEspera = tiempoEspera
+        self.tiempoAtaque = tiempoAtaque
+        self.posx = posiciones[0][random.randint(0,4)]
+        self.posy=800
+        self.sprite = load_image(sprite)
+        self.imagen = w.create_image(self.posx, self.posy, anchor=NW, image=self.sprite)
+        self.tipo=tipo
+        self.velocidad=5
+        self.monedasObtenidas=75
+        self.tiempoInicial=0
+        self.escudo=False
 
 class MonedasAleatorias():#Esta vlase estáa definida para crear monedas aleatorias
     def __init__(self, tipo):
@@ -142,237 +101,8 @@ class MonedasAleatorias():#Esta vlase estáa definida para crear monedas aleator
         self.imagen=w.create_image(self.posx, self.posy, anchor=NW, image=self.icono)
         self.mostrar=True
 
+torre=Rooks(50,  2, 12, True,"SandRook.png")
 
-#====================================== Funciones ==========================================
-
-def crear_avatars(cantidad_enemigos, n):    #Crea el avatar especificado
-    global enemigos
-    #n=random.randint(1,4)
-
-    #for i in range(20):
-    if n==1:
-        avatar_creado = Avatars(2, 5,12,10,"arquero.png")
-    if n==2:
-        avatar_creado = Avatars(3,10,10,15,"escudero.png")
-    if n==3:
-        avatar_creado = Avatars(9,20,13,5,"lenador.png")
-    if n==4:
-        avatar_creado = Avatars(12,25,14,3,"canibal.png")
-
-    enemigos.append(avatar_creado)
-
-    for i in range(len(enemigos)):
-        enemigos[i].sprite.place(x=enemigos[i].posx, y=enemigos[i].posy)
-        #print(enemigos[i].ataque)
-        #time.sleep(4)
-    #hilo1()
-
-
-    return image
-
-def juego():    #Ejecuta los elementos generales del juego
-    global enemigos
-    global torres
-    juegoIniciado=True
-    #n=archer.posy-100
-
-    while juegoIniciado:
-        time.sleep(0.5)
-        """ for i in range(len(enemigos)):
-                enemigos[i].enPantalla=True"""
-
-        crear_avatars(20,random.randint(1,4))   #Crea un avatar luego de completar una iteración
-        
-        for n in range(len(enemigos)):  #Mueve los avatar
-            time.sleep(0.01)
-            enemigos[n].posy-=enemigos[n].velocidad
-            enemigos[n].sprite.place(x=enemigos[n].posx, y=enemigos[n].posy)
-            
-
-
-
-            if enemigos[n].posy<=0: #Termina el juego si algún avatar llega al otro lado de la pantalla
-                juegoIniciado=False
-                break
-
-
-        """if (archer.posy>=archer.posy-100*n) and archer.posy>-100:
-                archer.posy-=archer.velocidad
-                archer.sprite.place(x=archer.posx, y=archer.posy)
-                time.sleep(0.2)
-                
-                if archer.posy<n:
-                    time.sleep(archer.tiempoEspera-0.2)
-                    n-=100
-                
-                if n==0:
-                    break"""
-
-        """if 
-            Rooks(50, 2, 12,False,"SandRook.png")
-            Rooks(100, 4, 14,False,"RockRook.png")
-            Rooks(150, 8, 16,False,"FireRook.png")
-            Rooks(150, 8, 16,False,"WaterRook.png")"""
-
-def hilo1():
-    t1 = Thread(target=juego, args=())
-    t1.start()
-#=============================== Definición de la ventana ================================== 
-
-
-def menu():
-    global save_file
-    Login_button.place(x=338, y=200)
-    Help_button.place(x=345, y=300)
-    Highscores_button.place(x=290, y=400)
-    Credits_button.place(x=320, y=500)
-    close_button.place(x=722, y=540)
-    highscore_label.place_forget()
-    Avatars_help.place_forget()
-    Rooks_help.place_forget()
-    Help_back.place_forget()
-    name_entry.place_forget()
-    exit_button.place_forget()
-    login_button.place_forget()
-    welcome_label2.place_forget()
-    NewGame_button.place_forget()
-    LoadGame_button.place_forget()
-    ChangeName_button.place_forget()
-    save_file = ReadFile("Saves.txt")
-    list_scores = ReadFile("Scores.txt")
-    save_list.clear()
-    bg_label.config(image=menu_bg)
-
-
-def menu_closing():
-    if messagebox.askyesno("Exit Game", "Do you wanna exit Avatars vs. Rooks?"):
-        master.quit()
-
-def game_closing():
-    global pause
-    pause = True
-    pygame.mixer.music.stop()
-    exit = messagebox.askyesno("Quit", "Are you sure you want to quit? (Make sure to save your progress)")
-
-    if exit:
-        game.withdraw()
-        master.deiconify()
-        pygame.mixer.music.load("Menu Music.mp3")
-        pygame.mixer.music.play(-1)
-        menu()
-
-    else:
-        pause = False
-        pygame.mixer.music.load("MEGALOVANIA.mp3")
-        pygame.mixer.music.play(-1)
-        arquero1()
-        canibal1()
-        tiempo()
-
-def load_image(image_name):
-    image_path = os.path.join("Images", image_name)
-    return PhotoImage(file=image_path)
-
-
-def login(back_button):
-    def verify_name(name):
-        if str(name) == "":
-            messagebox.showerror("Error", "Please enter a valid nickname, your name cannot be a blank space")
-        elif string_len(str(name), 0) > 9:
-            messagebox.showerror("Error", "Please enter something shorter, not more than 9 characters")
-        elif string_len(str(name), 0) < 3:
-            messagebox.showerror("Error", "Please enter something longer, not less than 3 characters")
-        else:
-            login_button.place_forget()
-            name_entry.place_forget()
-            login_screen()
-    global login_button
-    global welcome_label2
-    global NewGame_button
-    global ChangeName_button
-    global LoadGame_button
-    global exit_button
-    welcome_label2.place_forget()
-    NewGame_button.place_forget()
-    ChangeName_button.place_forget()
-    LoadGame_button.place_forget()
-    bg_label.config(image=login_bg)
-    Login_button.place_forget()
-    Help_button.place_forget()
-    Highscores_button.place_forget()
-    Credits_button.place_forget()
-    close_button.place_forget()
-    name_entry.place(x=266, y=200)
-    login_button.place(x=550, y=205)
-    login_button.config(command = lambda: verify_name(name_entry.get()))
-    if not back_button:
-        exit_button.place(x=700, y=540)
-
-
-def login_screen():
-    global NewGame_button
-    global LoadGame_button
-    global ChangeName_button
-    global welcome_label2
-    global event3
-    global save
-    global save_file
-    global save_list
-    bg_label.config(image=welcome_bg)
-    welcome_label2.config(text=name_entry.get())
-    welcome_label2.place(x=250, y=80)
-    NewGame_button.place(x=200, y=200)
-    NewGame_button.config(command=lambda: play_game(False, name_entry.get()))
-    LoadGame_button.place(x=420, y=200)
-    LoadGame_button.config(state=DISABLED)
-    ChangeName_button.place(x=300, y=300)
-    i = 0
-    save_list.clear()
-    while i < len(save_file):
-        save_list.append(save_file[i].split(",")[0])
-        i = i+1
-    i = 0
-    while i < len(save_list):
-        print(save_list)
-        if save_list[i] == str(name_entry.get()):
-            LoadGame_button.config(state=ACTIVE, command=lambda: play_game(True, save))
-            save = save_list[i]
-        i = i+1
-
-
-def string_len(string, result):
-    if string == "":
-        return result
-    else:
-        return string_len(string[1:],result+1)
-
-
-def play_game(load, name):
-    global pause
-    global new_game
-    global save_file
-    master.withdraw()
-    pygame.mixer.music.load("MEGALOVANIA.mp3")
-    pygame.mixer.music.play(-1)
-    game.deiconify()
-    game.protocol("WM_DELETE_WINDOW", game_closing)
-    save_button.place(x=520, y=0)
-    if load:
-        pause = False
-        new_game = False
-        i = 0
-        while i < len(save_file):
-            if name == save_file[i].split(",")[0]:
-                
-            i = i+1
-
-    elif not load:
-        pause = False
-        new_game = True
-        
-    juego()
-    tomar_tiempo()
-        
 def juego():
 
     if derrota==False:
@@ -719,223 +449,13 @@ def tomar_tiempo():
     else:
         pass
 
-def save_game():
-    global pause
-    global new_game
-    global nivel
-    pause = True
-    pygame.mixer.music.stop()
-
-    if new_game:
-        if messagebox.askyesno("Save", "Do you want to save your progress?"):
-            new_game=False
-            WriteSave(name_entry.get(), nivel, 1000)
-
-        else:
-            pause = False
-            pygame.mixer.music.load("MEGALOVANIA.mp3")
-            pygame.mixer.music.play(-1)
-            arquero1()
-            canibal1()
-
-    elif not new_game:
-        if messagebox.askyesno("Save", "Do you want to overwrite your progress?"):
-            ReWrite_save(name_entry.get(), nivel, 3000)
-
-        else:
-            pause = False
-            pygame.mixer.music.load("MEGALOVANIA.mp3")
-            pygame.mixer.music.play(-1)
-            arquero1()
-            canibal1()
 
 
 
-def help_menu():
-    def avatars_info():
-        bg_label.config(image=avatar_bg)
-        Avatars_help.place_forget()
-        Rooks_help.place_forget()
-        Help_back.place(x=0, y=550)
-
-    def rooks_info():
-        bg_label.config(image=rook_bg)
-        Avatars_help.place_forget()
-        Rooks_help.place_forget()
-        Help_back.place(x=0, y=550)
-
-    bg_label.config(image=how_bg)
-    Login_button.place_forget()
-    Help_button.place_forget()
-    Highscores_button.place_forget()
-    Credits_button.place_forget()
-    Help_back.place_forget()
-    close_button.place_forget()
-    Avatars_help.place(x=180, y=200)
-    Rooks_help.place(x=480, y=200)
-    Avatars_help.config(command=avatars_info)
-    Rooks_help.config(command=rooks_info)
-    exit_button.place(x=700, y=540)
 
 
-def Highscores():
-    bg_label.config(image=highscore_bg)
-    Login_button.place_forget()
-    Help_button.place_forget()
-    Highscores_button.place_forget()
-    Credits_button.place_forget()
-    close_button.place_forget()
-    exit_button.place(x=700, y=540)
-    highscore_label.place(x=120, y=180)
+juego()
+tomar_tiempo()
 
 
-def Credits():
-    bg_label.config(image=credits_bg)
-    Login_button.place_forget()
-    Help_button.place_forget()
-    Highscores_button.place_forget()
-    Credits_button.place_forget()
-    close_button.place_forget()
-    exit_button.place(x=700, y=540)
-
-
-def ReadFile(path):
-    archive = open(path)
-    content = archive.readlines()
-    archive.close()
-    return content
-
-#--------------------------------------------------------------------------------------------------------------------------
-
-
-def WriteSave(name, level, arc1):
-    global save_file
-    global pause
-    file = open("Saves.txt", 'r+')
-    file.read()
-    file.write('\n'+str(name)+","+str(level)+","+str(arc1))
-    file.close()
-    pause = False
-    pygame.mixer.music.load("MEGALOVANIA.mp3")
-    pygame.mixer.music.play(-1)
-    arquero1()
-    canibal1()
-
-'''
-def WriteScores(name,level):
-    writethis= ReWrite(ReadFile(),name,level,0,len(ReadFile()),"")
-    path="Scores.txt"
-    file=open(path,"w")
-    file.write(str(writethis))
-    file.close()
-
-
-def ReWrite_score(score_list,name,level,i,length,result):
-    global score
-    if i==length:
-        return result
-    elif int(score_list[i].split(",")[1])<=score:
-        new_index= name+","+str(score)+","+level+"\n"
-        return ReWrite(score_list,name,level,length,length,result+new_index+AddTheRest(score_list[i:length-1],0,len(score_list[i:length-1]),""))
-    else:
-        return ReWrite(score_list,name,level,i+1,length,result+score_list[i])
-
-'''
-def ReWrite_save(name,level,arc1):
-    global save_file
-    global pause
-    my_file = open("Saves.txt")
-    string_list = my_file.readlines()
-    my_file.close()
-    i = 0
-    while i < len(save_file) and pause:
-        if string_list[i].split(",")[0] == name:
-            string_list[i] = str(name) + "," + str(level) + "," + str(arc1) + '\n'
-            my_file = open("Saves.txt", "w")
-            new_file = "".join(string_list)
-            my_file.write(new_file)
-            my_file.close()
-            pause = False
-            pygame.mixer.music.load("MEGALOVANIA.mp3")
-            pygame.mixer.music.play(-1)
-            arquero1()
-        i = i+1
-
-#---------------------------------------------------------------------------------------------------------------------------
-
-
-save_file = ReadFile("Saves.txt")
-list_scores = ReadFile("Scores.txt")
-master.protocol("WM_DELETE_WINDOW", menu_closing)
-
-login_bg = load_image("LoginBG.png")
-menu_bg = load_image("MenuBG.png")
-how_bg = load_image("HowtoBG.png")
-avatar_bg = load_image("AvatarBG.png")
-rook_bg = load_image("RookBG.png")
-credits_bg = load_image("CreditsBG.png")
-highscore_bg = load_image("HighscoreBG.png")
-welcome_bg = load_image("WelcomeBG.png")
-arquero_img = load_image("arquero.png")
-escudero_img = load_image("escudero.png")
-canibal_img = load_image("canibal.png")
-lenador_img = load_image("lenador.png")
-
-escudero = w.create_image(0, 0, anchor=NW, image=escudero_img)
-w.move(escudero, 100, 900)
-bg_label = Label(image=menu_bg)
-bg_label.place(x=-2, y=-2)
-name_entry = Entry(width=15, font=("Comic Sans MS", 22, "bold"), justify=CENTER)
-welcome_label2 = Label(text="", font=("Impact", 48), bg="black", fg="white")
-exit_button = Button(master, text="Back to\nmenu", fg="blue", bg="lightgrey",
-                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=menu)
-login_button = Button(master, text="Login", fg="blue", bg="lightgrey",
-                          font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER)
-highscore_label = Message(
-        text="1. " + list_scores[0].split(",")[0] + ", Time: " + list_scores[0].split(",")[1] + " seconds, Coins: " +
-             list_scores[0].split(",")[2] +
-             "2. " + list_scores[1].split(",")[0] + ", Time: " + list_scores[1].split(",")[1] + " seconds, Coins: " +
-             list_scores[1].split(",")[2] +
-             "3. " + list_scores[2].split(",")[0] + ", Time: " + list_scores[2].split(",")[1] + " seconds, Coins: " +
-             list_scores[2].split(",")[2], fg="#0051ff", bg="black", font=("Impact", 25), justify=CENTER,
-        width=1000)
-
-Rooks_help = Button(master, text="Rooks", fg="blue",
-                        bg="lightgrey", font=("Gill Sans Ultra Bold", 18), justify=CENTER)
-
-Avatars_help = Button(master, text="Avatars", fg="blue",
-                        bg="lightgrey", font=("Gill Sans Ultra Bold", 18), justify=CENTER)
-
-Help_back = Button(master, text="Back", fg="blue",
-                        bg="lightgrey", font=("Gill Sans Ultra Bold", 15), justify=CENTER, command=help_menu)
-
-NewGame_button = Button(master, text="New Game", fg="blue",
-                        bg="lightgrey", font=("Gill Sans Ultra Bold", 20), justify=CENTER)
-LoadGame_button = Button(master, text="Load Game", fg="blue",
-                         bg="lightgrey", font=("Gill Sans Ultra Bold", 20), justify=CENTER)
-ChangeName_button = Button(master, text="Change Name", fg="blue", bg="lightgrey",
-                               font=("Gill Sans Ultra Bold", 20), justify=CENTER, command=lambda: login(True))
-Login_button = Button(master, text="Login", fg="blue"
-                      , bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=lambda: login(False))
-Login_button.place(x=338, y=200)
-Help_button = Button(master, text="Help", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"),
-                     justify=CENTER, command=help_menu)
-Help_button.place(x=345, y=300)
-Credits_button = Button(master, text="Credits", fg="blue", bg="lightgrey", font=("Gill Sans Ultra Bold", 20, "bold"),
-                        justify=CENTER, command=Credits)
-Credits_button.place(x=320, y=500)
-Highscores_button = Button(master, text="Highscores", fg="blue", bg="lightgrey",
-                           font=("Gill Sans Ultra Bold", 20, "bold"), justify=CENTER, command=Highscores)
-Highscores_button.place(x=290, y=400)
-
-close_button = Button(master, text="Exit\nGame", fg="blue", bg="lightgrey",
-                         font=("Gill Sans Ultra Bold", 12, "bold"), justify=CENTER, command=menu_closing)
-close_button.place(x=722, y=540)
-save_button = Button(game, text="Save", fg="blue", bg="lightgrey",
-                           font=("Gill Sans Ultra Bold", 18), justify=CENTER, command=save_game)
-
-
-master.mainloop()
-
-
-
+mainloop()
