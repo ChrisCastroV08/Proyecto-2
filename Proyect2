@@ -9,12 +9,7 @@ import threading
 from threading import Thread
 
 #============================= Variables globales ===============================
-monedas=150
-enemigos=[]
-enemigosImg=[]
-torres=[]
-imagen=[]
-imagen2=[]
+monedas=500
 posiciones=[[0,100,200,300,400,500],[0,100,200,300,400,500,600,700,800,900]] #La primera sublista son las posiciones en X, la segunda en Y
 posiciones_usadas=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
 posiciones_entidades=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
@@ -38,6 +33,15 @@ arqueros1 = []
 arqueros2 = []
 arqueros3 = []
 canibales = []
+tiempo=0
+tipos_rooks=["SandRook.png","RockRook.png","FireRook.png","WaterRook.png"]
+imagenes_rooks=[]
+monedasEnPantalla=[]
+derrota=False
+nivel=1
+cantidad_enemigos_por_derrotar=7
+cantidad_enemigos_derrotados=0
+tiempoAparicion=15
 
 master = Tk()
 master.title("Proyecto 2")
@@ -47,12 +51,17 @@ master.resizable(False, False)
 game = Toplevel()
 game.geometry("650x900")
 game.resizable(False, False)
-w = Canvas(game, width=500, height=900, bg="blue")
+w = Canvas(game, width=500, height=900, bg="#24571d")
 w.place(x=0, y=0)
 for i in range(6):
     lineX = w.create_rectangle(i * 100, 0, i * 100, 900, fill="black")
 for j in range(10):
     lineY = w.create_rectangle(0, j * 100, 900, j * 100, fill="black")
+imagenSandRook  = w.create_image(500, posiciones[1][2], anchor=NW, image=imgSandRook)
+imagenRockRook  = w.create_image(500, posiciones[1][3], anchor=NW, image=imgRockRook)
+imagenFireRook  = w.create_image(500, posiciones[1][4], anchor=NW, image=imgFireRook)
+imagenWaterRook = w.create_image(500, posiciones[1][5], anchor=NW, image=imgWaterRook)
+
 game.withdraw()
 sys.setrecursionlimit(100000)  # Increases the recursion limit
 pygame.init()
@@ -63,6 +72,11 @@ pygame.mixer.music.play(-1)  # The minus 1 loops the song
 def load_image(image_name):
     image_path = os.path.join("Images", image_name)
     return PhotoImage(file=image_path)
+
+imgSandRook = load_image(tipos_rooks[0])
+imgRockRook = load_image(tipos_rooks[1])
+imgFireRook = load_image(tipos_rooks[2])
+imgWaterRook = load_image(tipos_rooks[3])
 
 class Avatars(): #Esta clase es la base para crar a los avatar
     pass
@@ -322,14 +336,361 @@ def play_game(load, name):
         i = 0
         while i < len(save_file):
             if name == save_file[i].split(",")[0]:
-                crear_avatars(True, save_file[i].split(",")[1])
+                
             i = i+1
 
     elif not load:
         pause = False
         new_game = True
-        crear_avatars(False, 1)
+        
+    juego()
+    tomar_tiempo()
+        
+def juego():
 
+    if derrota==False:
+
+        def click_izquierdo(event):
+            global colocar_torre
+            global elegir_torre
+            global x, y
+            global torre, tiempo
+        
+            if x<=posiciones[0][len(posiciones[0])-1] and posiciones[1][0]<=y<=posiciones[1][len(posiciones[1])-1] and torre.generado==False:
+                colocar_torre=True
+                #print("colocar_torre = {}".format(colocar_torre))
+        
+            elif x>posiciones[0][len(posiciones[0])-1] and posiciones[1][2]<=y<=posiciones[1][6]:
+                elegir_torre =True
+        
+            #print("{} {}".format(colocar_torre, elegir_torre))
+        
+        def click_derecho(event):
+            global eliminar_torre
+            global x,y
+        
+            eliminar_torre=True
+        
+        def motion(event):
+            global tiempo, derrota
+            global colocar_torre, elegir_torre, eliminar_torre
+            global x,y
+            global torre, monedas
+            
+            x, y = event.x, event.y
+
+
+            for i in range(len(monedasEnPantalla)):
+
+                if monedasEnPantalla[i].posx<=x<=monedasEnPantalla[i].posx+50 and monedasEnPantalla[i].posy<=y<=monedasEnPantalla[i].posy+50:
+
+                    if monedasEnPantalla[i].tipo=="25coin.png":
+                        monedas+=25
+                    if monedasEnPantalla[i].tipo=="50coin.png":
+                        monedas+=50
+                    if monedasEnPantalla[i].tipo=="100coin.png":
+                        monedas+=100
+
+                    monedasEnPantalla[i].posx, monedasEnPantalla[i].posy=10000,10000
+                    monedasEnPantalla[i].mostrar==False
+
+
+
+            for i in range(len(posiciones[0])-1):
+                for j in range(len(posiciones[1])-1):
+        
+                    if x>=posiciones[0][len(posiciones[0])-1] and posiciones[1][j]<=y<=posiciones[1][j+1] and elegir_torre==True:
+                        if j==2:
+                            torre=Rooks(50,  2, 12, False,"SandRook.png")
+                        if j==3:
+                            torre=Rooks(100, 4, 14, False,"RockRook.png")
+                        if j==4:
+                            torre=Rooks(150, 8, 16, False,"FireRook.png")
+                        if j==5:
+                            torre=Rooks(150, 8, 16, False,"WaterRook.png")
+
+                        torre.tiempoInicial=tiempo
+                        elegir_torre=False
+        
+                    if posiciones[0][i]<=x<=posiciones[0][i+1] and posiciones[1][j]<=y<=posiciones[1][j+1]:
+                        
+                        if posiciones_usadas[j][i]==0 and colocar_torre==True and torre.generado==False:
+                            if monedas>=torre.precio:
+                                entidades[j][i]=torre
+                                entidades[j][i].posx,entidades[j][i].posy = posiciones[0][i], posiciones[1][j]
+                                
+                                posiciones_usadas[j][i]=1
+                
+                                w.moveto(entidades[j][i].imagen, entidades[j][i].posx, entidades[j][i].posy)
+            
+                                entidades[j][i].generado=True
+                                entidades[j][i].generado=True
+                                colocar_torre=False
+                                monedas-=entidades[j][i].precio
+
+                            else:
+                                colocar_torre=False
+                                print("No tienes monedas suficientes")
+
+                            #print("Monedas = {}".format(monedas))
+
+                        elif posiciones_usadas[j][i]==1 and eliminar_torre==True:
+            
+
+                            w.moveto(entidades[j][i].imagen, 10000, 10000)
+            
+                            entidades[j][i]=0
+                            posiciones_usadas[j][i]=0
+            
+                            eliminar_torre=False
+
+                    if posiciones_usadas[j][i]==1 and entidades[j][i].destruida==True:
+
+                            w.moveto(entidades[j][i].imagen, 10000, 10000)
+            
+                            entidades[j][i]=0
+                            posiciones_usadas[j][i]=0
+            
+                            eliminar_torre=False
+
+
+        
+    w.bind('<Motion>', motion)
+    w.bind("<Button-1>", click_izquierdo)
+    w.bind("<Button-3>", click_derecho)
+
+def tomar_tiempo():
+    global tiempo, monedas
+    global monedasEnPantalla
+    global derrota, cantidad_enemigos_por_derrotar, cantidad_enemigos_derrotados
+    global nivel
+
+    def vaciarMatrices():
+        global tiempo, monedas
+        global monedasEnPantalla
+        global derrota
+
+        for i in range(len(posiciones[0])-1):
+            for j in range(len(posiciones[1])-1):
+                if posiciones_usadas[j][i]!=0:
+                    w.moveto(entidades[j][i].imagen, 10000, 10000)
+                    posiciones_usadas[j][i]=0
+                    entidades[j][i]=0
+        for i in range(len(monedasEnPantalla)):
+            monedasEnPantalla[i].mostrar=False
+
+    def crear_avatars():    #Crea el avatar especificado
+ 
+        n=random.randint(1,4)
+        if n==1:
+            avatar_creado = Avatars(2, 5,12,10,"arquero.png", "arquero")
+        if n==2:
+            avatar_creado = Avatars(3,10,10,15,"escudero.png", "escudero")
+        if n==3:
+            avatar_creado = Avatars(9,20,13,5,"lenador.png", "lenador")
+        if n==4:
+            avatar_creado = Avatars(12,25,14,3,"canibal.png", "canibal")
+        
+        
+        for i in range(len(posiciones[0])-1):
+            if posiciones_usadas[8][i]==0 and avatar_creado.posx==posiciones[0][i]:
+
+                posiciones_usadas[8][i]=2
+                entidades[8][i]=avatar_creado
+                w.moveto(entidades[8][i].imagen, entidades[8][i].posx, entidades[8][i].posy)
+                break
+
+            else:
+                avatar_creado.posx=posiciones[0][random.randint(0,4)] 
+
+
+    if derrota==False:
+        tiempo+=1
+
+        if tiempo%60<10:
+            labelTiempo= Label(w, text="0{}:0{}".format(tiempo//60, tiempo%60))
+        else:
+            labelTiempo= Label(w, text="0{}:{}".format(tiempo//60, tiempo%60))
+        
+        labelTiempo.config(fg="black", bg="#203060", font=("Verdana",20))
+        labelTiempo.place(x=510, y=10)
+
+        labelMonedas= Label(w, text="Tienes {}\nmonedas".format(monedas))
+        labelMonedas.config(fg="black", bg="#203060", font=("Verdana",10))
+        labelMonedas.place(x=510, y= 50)
+        #print("{}:{}".format(tiempo//60, tiempo%60))
+        
+        if tiempo%random.randint(15,18)==0:
+            monedasContador=random.randint(1,3)
+
+            if monedasContador==0:
+                monedaAleatoria= MonedasAleatorias("25coin.png")
+
+            if monedasContador==1:
+                monedaAleatoria= MonedasAleatorias("50coin.png")
+
+            if monedasContador==2:
+                monedaAleatoria= MonedasAleatorias("100coin.png")
+
+            if monedasContador==0 or monedasContador==1 or monedasContador==2:
+                monedasEnPantalla.append(monedaAleatoria)
+
+            if len(monedasEnPantalla)>0:
+                w.moveto(monedasEnPantalla[len(monedasEnPantalla)-1],monedasEnPantalla[len(monedasEnPantalla)-1].posx, monedasEnPantalla[len(monedasEnPantalla)-1].posy)
+
+        for i in range(len(posiciones[0])-1):
+            for j in range(len(posiciones[1])-1):
+                for n in range(len(posiciones[1])-1-j):
+                    if derrota==True:
+                        break
+
+                    if cantidad_enemigos_por_derrotar>0:
+
+                        if nivel==1 and tiempo%tiempoAparicion==0:
+                            crear_avatars()
+                            cantidad_enemigos_por_derrotar-=1
+
+                        if nivel==2 and round(tiempo%(tiempoAparicion*0.7),0)==0:
+                            crear_avatars()
+                            cantidad_enemigos_por_derrotar-=1
+
+                        if nivel==3 and round(tiempo%(tiempoAparicion*0.7**2),0):
+                            crear_avatars()
+                            cantidad_enemigos_por_derrotar-=1
+
+                        if nivel==4:
+                            print("Felicidades, ganaste")
+
+                    if cantidad_enemigos_por_derrotar<=0:
+
+                        if nivel==1:
+                            cantidad_enemigos_por_derrotar=10
+
+                        if nivel==2:
+                            cantidad_enemigos_por_derrotar=13
+
+                        if nivel==3:
+                            pass
+                        if cantidad_enemigos_derrotados:
+
+                            nivel+=1
+                            cantidad_enemigos_derrotados=0
+                            vaciarMatrices()                            
+
+                    if posiciones_usadas[j][i]==1:
+                        entidades[j][i].k=0
+
+                        if posiciones_usadas[j+n][i]==2 and j<=len(posiciones[1])-n:
+
+                            for z in range(j+n):
+                                if posiciones_usadas[entidades[j][i].k][i]!=2:
+                                    entidades[j][i].k+=1
+                                    #print(j+n,k)
+
+                            #print((tiempo-entidades[j][i].tiempoInicial)%entidades[j][i].frecuenciaAtaque)
+
+                            if entidades[j][i].k==j+n:
+
+                                if entidades[j+n][i].resistencia>0 and (tiempo-entidades[j][i].tiempoInicial)%entidades[j][i].frecuenciaAtaque==0:
+
+                                    if entidades[j+n][i].tipo=="escudero" and entidades[j+n][i].escudo==True:
+
+                                        entidades[j+n][i].resistencia-=entidades[j][i].potenciaAtaque//2
+        
+
+                                    else:
+
+                                        entidades[j+n][i].resistencia-=entidades[j][i].potenciaAtaque
+        
+                                    if entidades[j+n][i].resistencia<0:
+                                        entidades[j+n][i].resistencia=0
+        
+                                    print("El hp del avatar [{}][{}] es {}".format(j+n, i, entidades[j+n][i].resistencia))
+                                    #break
+
+                                elif entidades[j+n][i].resistencia<=0:
+                                    monedas+=entidades[j+n][i].monedasObtenidas
+                                    entidades[j+n][i].posx=10000
+                                    entidades[j+n][i].posy=10000
+                                    w.moveto(entidades[j+n][i], entidades[j+n][i].posx, entidades[j+n][i].posy)
+                                    entidades[j+n][i]=0
+                                    posiciones_usadas[j+n][i]=0
+
+                                    cantidad_enemigos_derrotados+=1
+
+                if posiciones_usadas[j][i]==2:
+
+                    if entidades[j][i].tipo=="arquero":
+                        torres_por_atacar=[]
+
+                        for m in range(j):
+                            if posiciones_usadas[j-m][i]==1:
+                                torres_por_atacar.append(j-m)
+
+                        if len(torres_por_atacar)>0:
+                            p=max(torres_por_atacar)
+
+                            if posiciones_usadas[p][i]==1:
+
+                                if entidades[p][i].resistencia>0:
+                                    entidades[p][i].resistencia-=entidades[j][i].ataque
+                                    print("El hp de la torre [{}][{}] es {}".format(p, i, entidades[p][i].resistencia))
+
+                                    if entidades[p][i].resistencia<0:
+                                        entidades[p][i].resistencia=0
+
+                                elif entidades[p][i].resistencia<=0:
+                                    entidades[p][i].destruida=True
+
+
+
+                    elif entidades[j][i].tipo=="escudero" or entidades[j][i].tipo=="canibal" or entidades[j][i].tipo=="lenador":
+
+                        if entidades[j][i].tipo=="escudero" and tiempo%5==0:
+                            if entidades[j][i].escudo==True:
+                                entidades[j][i].escudo=False
+
+                            if entidades[j][i].escudo==False:
+                                entidades[j][i].escudo=True
+
+                        if posiciones_usadas[j-1][i]==1:
+
+                            if entidades[j-1][i].resistencia>0 and (tiempo-entidades[j][i].tiempoInicial)%entidades[j][i].tiempoAtaque==0:
+                                entidades[j-1][i].resistencia-=entidades[j][i].ataque
+
+                                if entidades[j-1][i].resistencia<0:
+                                    entidades[j-1][i].resistencia=0
+
+
+                                print("El hp de la torre [{}][{}] es {}".format(j,i,entidades[j-1][i].resistencia))
+
+                            elif entidades[j-1][i].resistencia<=0:
+                                entidades[j-1][i].destruida=True
+
+                    if posiciones_usadas[j-1][i]==0:
+
+                        if (tiempo-entidades[j][i].tiempoInicial)%entidades[j][i].tiempoEspera==0:
+
+                            w.moveto(entidades[j][i].imagen, posiciones[0][i], posiciones[1][j-1])
+
+                            posiciones_usadas[j-1][i]=posiciones_usadas[j][i]
+                            posiciones_usadas[j][i]=0
+
+                            entidades[j-1][i]=entidades[j][i]
+                            entidades[j][i]=0
+
+                    if j==0:
+                        print("Has perdido, manco")
+                        derrota==True
+                        vaciarMatrices()
+
+                    
+
+
+        w.after(1000, tomar_tiempo)
+
+    else:
+        pass
 
 def save_game():
     global pause
